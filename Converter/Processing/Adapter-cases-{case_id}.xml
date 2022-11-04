@@ -1,0 +1,85 @@
+<Configuration
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../FrankConfig.xsd"
+    >
+    <Adapter name="Adapter-cases-{case_id}" description="OpenApi auto-generated at 2022-09-29 10:27:09 for ibis4salesforce_case (LOC)">
+        <Receiver name="Receiver-cases/{case_id}">
+            <ApiListener name="ApiListener-cases/{case_id}" method="PATCH" uriPattern="/cases/{case_id}" produces="ANY"/>
+        </Receiver>
+        <Pipeline>
+            <Exits>
+                <Exit path="EXIT"               state="SUCCESS" code="200" />
+                <Exit path="NotModified"        state="SUCCESS" code="304" />
+                <Exit path="BadRequest"         state="ERROR"   code="400" />
+                <Exit path="NotAuthorized"      state="ERROR"   code="401" empty="true" />
+                <Exit path="NotAllowed"         state="ERROR"   code="403" empty="true" />
+                <Exit path="PreconditionFailed" state="ERROR"   code="412" />
+                <Exit path="ServerError"        state="ERROR"   code="500" />
+                <Exit path="Timeout"            state="ERROR"   code="504" />
+            </Exits>
+            <FixedResultPipeline name="Helloworld" result="Hello World!"/>
+
+            <Json2XmlInputValidator
+                                   schema="FindDocuments_GET_4/xsd/Archiving_Document_4_FindDocuments_1_GET.xsd"
+                                   root="FindDocuments_Request"
+                                   responseRoot="FindDocuments_Response,FindDocuments_Error"
+                                   deepSearch="true">
+                <Param name="schemaName"                sessionKey="schemaName"/>
+                <Param name="requestUserId"             sessionKey="requestUserId"/>
+                <Param name="includeMedicalDocuments"   sessionKey="includeMedicalDocuments"/>
+                <Param name="maxItems"                  sessionKey="maxItems" type="INTEGER"/>
+                <Param name="skipCount"                 sessionKey="skipCount"/>
+                <Param name="sortAttribute"             sessionKey="sortAttribute"/>
+                <Param name="sortOrder"                 sessionKey="sortOrder"/>
+                <Param name="agreementNumber"           sessionKey="agreementNumber"/>
+                <Param name="agreementNumberType"       sessionKey="agreementNumberType"/>
+                <Param name="authorizedTo"              sessionKey="authorizedTo"/>
+                <Param name="birthDate"                 sessionKey="birthDate"/>
+                <Param name="businessUnit"              sessionKey="businessUnit"/>
+                <Param name="claimNumber"               sessionKey="claimNumber"/>
+                <Param name="contractNumber"            sessionKey="contractNumber"/>
+                <Param name="contractNumberHolding"     sessionKey="contractNumberHolding"/>
+                <Param name="descriptionProductGroup"   sessionKey="descriptionProductGroup"/>
+                <Param name="documentDetail"            sessionKey="documentDetail"/>
+                <Param name="documentRelationId"        sessionKey="documentRelationId"/>
+                <Param name="documentRouting"           sessionKey="documentRouting"/>
+                <Param name="documentTitle"             sessionKey="documentTitle"/>
+                <Param name="documentType"              sessionKey="documentType"/>
+                <Param name="externalDocumentId"        sessionKey="externalDocumentId"/>
+                <Param name="IBAN"                      sessionKey="IBAN"/>
+                <Param name="label"                     sessionKey="label"/>
+                <Param name="language"                  sessionKey="language"/>
+                <Param name="nameHolding"               sessionKey="nameHolding"/>
+                <Param name="nameInsured"               sessionKey="nameInsured"/>
+                <Param name="nameOrganisation"          sessionKey="nameOrganisation"/>
+                <Param name="namePolicyHolder"          sessionKey="namePolicyHolder"/>
+                <Param name="organisationId"            sessionKey="organisationId"/>
+                <Param name="partnerGold"               sessionKey="partnerGold"/>
+                <Param name="partnerIntermediary"       sessionKey="partnerIntermediary"/>
+                <Param name="partnerSilver"             sessionKey="partnerSilver"/>
+                <Param name="processId"                 sessionKey="processId"/>
+                <Param name="productCode"               sessionKey="productCode"/>
+                <Param name="quotationNumber"           sessionKey="quotationNumber"/>
+                <Param name="referenceDate"             sessionKey="referenceDate"/>
+                <Param name="requestNumber"             sessionKey="requestNumber"/>
+                <Param name="requiredByLawId"           sessionKey="requiredByLawId"/>
+                <Param name="subject"                   sessionKey="subject"/>
+                <Param name="VTA_ID"                    sessionKey="VTA_ID"/>
+                <Param name="year"                      sessionKey="year"/>
+                <Param name="archiveDateBegin"          sessionKey="archiveDateBegin"/>
+                <Param name="archiveDateEnd"            sessionKey="archiveDateEnd"/>
+                <Param name="issuedDateBegin"           sessionKey="issuedDateBegin"/>
+                <Param name="issuedDateEnd"             sessionKey="issuedDateEnd"/>
+                <Param name="referenceDateBegin"        sessionKey="referenceDateBegin"/>
+                <Param name="referenceDateEnd"          sessionKey="referenceDateEnd"/>
+
+                <Forward name="success"     path="Build_query" />
+                <Forward name="parserError" path="NotWellFormed" />
+                <Forward name="illegalRoot" path="IllegalRoot"/>
+                <Forward name="failure"     path="InvalidXml"/>
+            </Json2XmlInputValidator>
+        </Pipeline>
+    </Adapter>
+</Configuration>
+
+
