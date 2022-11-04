@@ -23,7 +23,7 @@ public class XSDGenerator {
     public void execute(OpenAPI openAPI) throws SAXException, FileNotFoundException {
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
-        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/../Converter/Processing/" + "xsd.txt");
+        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/Converter/Processing/" + "xsd.txt");
         XmlWriter writer = new XmlWriter(outputStream, true);
         writer.setIncludeXmlDeclaration(true);
         writer.setNewlineAfterXmlDeclaration(true);

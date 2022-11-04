@@ -7,6 +7,7 @@
             <ApiListener name="ApiListener-casedocuments" method="GET" uriPattern="/casedocuments" produces="ANY"/>
         </Receiver>
         <Pipeline>
+            
             <Exits>
                 <Exit path="EXIT"               state="SUCCESS" code="200" />
                 <Exit path="NotModified"        state="SUCCESS" code="304" />

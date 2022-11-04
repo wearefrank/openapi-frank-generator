@@ -7,6 +7,7 @@
             <ApiListener name="ApiListener-cases/{case_id}" method="PATCH" uriPattern="/cases/{case_id}" produces="ANY"/>
         </Receiver>
         <Pipeline>
+            
             <Exits>
                 <Exit path="EXIT"               state="SUCCESS" code="200" />
                 <Exit path="NotModified"        state="SUCCESS" code="304" />

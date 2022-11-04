@@ -40,7 +40,7 @@ public class XMLGenerator {
             System.out.println(adapterTemplate);
 
             // Export the template to xml file
-            File xmlFile = new File(System.getProperty("user.dir") + "/../Converter/Processing/" + adapter.getAdapterName() + ".xml");
+            File xmlFile = new File(System.getProperty("user.dir") + "/Converter/Processing/" + adapter.getAdapterName() + ".xml");
             // Write string to file
             java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
 

@@ -13,6 +13,7 @@ public class Main {
         //// INITIALIZATION ////
         // get source of current directory
         String source = System.getProperty("user.dir") + "/Converter/Intake/openapi.json";
+
         // Add cli option
         if (args.length > 0) {
             source = args[0];
