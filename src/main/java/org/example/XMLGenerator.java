@@ -7,16 +7,16 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import org.example.adapter.AdapterClass;
 import org.example.adapter.AdapterJsonfiyer;
-import org.example.adapter.ParamSingleton;
+import org.example.adapter.AdapterRefs;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public void execute(OpenAPI openAPI) throws IOException {
+    static public void execute(OpenAPI openAPI) throws IOException, SAXException {
         Paths paths = openAPI.getPaths();
-        ParamSingleton.getInstance().resetIndex();
 
         // For loop going through all the paths and instantiating a new AdapterClass
         for (Map.Entry<String, PathItem> path : paths.entrySet()) {
@@ -44,9 +44,7 @@ public class XMLGenerator {
             // Write string to file
             java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
 
-            // print the params
-            ParamSingleton.getInstance().printParams();
-            ParamSingleton.getInstance().increaseIndex();
+            AdapterRefs adapterRefs = new AdapterRefs(openAPI, path);
         }
     }
 }

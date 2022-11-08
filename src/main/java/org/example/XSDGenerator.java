@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.media.Schema;
 import nl.nn.adapterframework.xml.PrettyPrintFilter;
 import nl.nn.adapterframework.xml.SaxDocumentBuilder;
 import nl.nn.adapterframework.xml.XmlWriter;
-import org.example.adapter.ParamSingleton;
 import org.example.schemas.*;
 import org.example.schemas.Types.ComplexType;
 import org.example.schemas.Types.Reference;
@@ -15,12 +14,19 @@ import org.xml.sax.SAXException;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class XSDGenerator {
-    public void execute(OpenAPI openAPI) throws SAXException, FileNotFoundException {
+
+    OpenAPI openAPI;
+    public void execute(OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
+        this.openAPI = openAPI;
+
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
         FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/Converter/Processing/" + "xsd.txt");
@@ -36,9 +42,11 @@ public class XSDGenerator {
         builder.addAttribute("targetNamespace","http://www.example.org");
         builder.addAttribute("elementFormDefault","qualified");
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
-            Typing result = createXSDEntry(entry.getKey(), entry.getValue());
-            result.AddToBuilder(builder);
-            ParamSingleton.getInstance().increaseIndex();
+            boolean isRef = refs.contains(entry.getKey());
+            if (refs.contains(entry.getKey())) {
+                Typing result = createXSDEntry(entry.getKey(), entry.getValue());
+                result.AddToBuilder(builder);
+            }
         }
         builder.endElement();
         builder.close();
@@ -69,17 +77,16 @@ public class XSDGenerator {
                     // TODO: Check if this is correct; map.entry<String, Schema> was used
                     SimpleType simpleType = new SimpleType(key, entry.getType());
                     simpleType = getSimpleTypeAttributes((Map.Entry<String, Schema>) entry, simpleType);
-
-                    // Add new parameter to the singleton
-                    ParamSingleton.getInstance().addParameter(key, entry.getType());
-
                     return simpleType;
                 }
                 //// REFERENCE ////
                 else if (entry.getItems().get$ref() != null  ) {
                     // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
-                    ParamSingleton.getInstance().addParameter(key, entry.getItems().get$ref());
-                    return new Reference(key, entry.getItems().get$ref());
+                    for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()){
+                        if (isContain(innerEntry.getKey(),entry.getItems().get$ref())) {
+                            return createXSDEntry(innerEntry.getKey(), innerEntry.getValue());
+                        }
+                    }
                 }
 
             } catch (NullPointerException e) {
@@ -106,9 +113,12 @@ public class XSDGenerator {
                     if(e.getValue().get$ref() != null){
                         //// REFERENCE ////
                         complexType.addTyping(new Reference(name, e.getValue().get$ref()));
-
-                        // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
-                        ParamSingleton.getInstance().addParameter(name, e.getValue().get$ref());
+                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
+                            if (entry.getKey().equals(e.getValue().get$ref())) {
+                                complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                            }
+                        }
+                        // TODO: fix that isContain also implemented here!!!
                     }
                     else if (e.getValue().getItems() == null) {
                         //// OAS MISHAP ////
@@ -120,9 +130,12 @@ public class XSDGenerator {
                     else if (e.getValue().getItems().get$ref() != null) {
                         //// REFERENCE ////
                         complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
-
-                        // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
-                        ParamSingleton.getInstance().addParameter(name, e.getValue().getItems().get$ref());
+                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
+                            if (entry.getKey().equals(e.getValue().get$ref())) {
+                                complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                            }
+                        }
+                        // TODO: fix that isContain also implemented here!!!
                     }
 
                     else if (e.getValue().getItems().getProperties() == null) {
@@ -130,9 +143,6 @@ public class XSDGenerator {
                         SimpleType simple = new SimpleType(name, e.getValue().getType());
                         simple = getSimpleTypeAttributes(e, simple);
                         complexType.addTyping(simple);
-
-                        // Add new parameter to the singleton
-                        ParamSingleton.getInstance().addParameter(name, e.getValue().getType());
                     }
                     else {
                         //// RECURSION, NORMAL ////
@@ -144,18 +154,12 @@ public class XSDGenerator {
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
-
-                    // Add the parameter to the singleton
-                    ParamSingleton.getInstance().addParameter(name, e.getValue().getType());
                 }
                 else if (checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
                     //// SIMPLETYPE ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
-
-                    // Add new parameter to the singleton
-                    ParamSingleton.getInstance().addParameter(name, e.getValue().getType());
                 }
                 else {
                     //// ELEMENT ////
@@ -163,9 +167,6 @@ public class XSDGenerator {
                     element.setType(getType(e));
                     element = getElementAttributes(e, element, required);
                     complexType.addElement(element);
-
-                    // Add new parameter to the singleton
-                    ParamSingleton.getInstance().addParameter(name, getType(e));
                 }
             }
             catch (NullPointerException ex) {
@@ -242,5 +243,16 @@ public class XSDGenerator {
         }
         object.setMaxOccurs(e.getValue().getMaxItems());
         return object;
+    }
+
+
+    private static boolean isContain(String source, String reference) {
+        String[] parts = reference.split("/");
+        String subItem = parts[parts.length - 1];
+
+        String pattern = "\\b"+subItem+"\\b";
+        Pattern p=Pattern.compile(pattern);
+        Matcher m=p.matcher(source);
+        return m.find();
     }
 }

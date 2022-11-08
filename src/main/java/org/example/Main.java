@@ -25,9 +25,6 @@ public class Main {
         SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
         OpenAPI openAPI = result.getOpenAPI();
 
-        XSDGenerator xsdGenerator = new XSDGenerator();
-        xsdGenerator.execute(openAPI);
-
         XMLGenerator.execute(openAPI);
 
     }

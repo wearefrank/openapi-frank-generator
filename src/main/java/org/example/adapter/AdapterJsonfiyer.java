@@ -45,7 +45,6 @@ public class AdapterJsonfiyer {
         apiListenerJson.put("produces", new ApiListenerClass(this.path).getProduces());
         adapterJson.put("apiListener", apiListenerJson);
         // Array of key value pairs
-        JSONObject[] keyValuePairs = new JSONObject[ParamSingleton.getInstance().params.length];
 
         // Return the JSONObject
         return adapterJson;
