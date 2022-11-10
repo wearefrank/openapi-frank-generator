@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class AdapterRefs {
     private ArrayList<String> refs;
 
-    public AdapterRefs(OpenAPI openAPI, Map.Entry<String, PathItem> path) throws FileNotFoundException, SAXException {
+    public AdapterRefs(String adapterName, OpenAPI openAPI, Map.Entry<String, PathItem> path) throws FileNotFoundException, SAXException {
         this.refs = new ArrayList<>();
 
         // TODO: if more api types added, add them here
@@ -38,7 +38,7 @@ public class AdapterRefs {
         }
 
         XSDGenerator xsdGenerator = new XSDGenerator();
-        xsdGenerator.execute(openAPI, uniqueRefs());
+        xsdGenerator.execute(adapterName, openAPI, uniqueRefs());
         System.out.println(uniqueRefs());
     }
     // fill array with references

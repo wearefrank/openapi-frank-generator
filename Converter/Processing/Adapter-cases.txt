@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org" targetNamespace="http://www.example.org" elementFormDefault="qualified">
+	<xs:complexType name="errors">
+		<xs:sequence>
+			<xs:complexType name="error">
+				<xs:sequence>
+					<xs:element name="type" type="xs:string" minOccurs="1"/>
+					<xs:element name="title" type="xs:string" minOccurs="1"/>
+					<xs:element name="status" type="xs:string" minOccurs="1"/>
+					<xs:element name="detail" type="xs:string" minOccurs="0"/>
+					<xs:element name="instance" type="xs:string" minOccurs="1"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="cases">
+		<xs:sequence>
+			<xs:complexType name="case">
+				<xs:sequence>
+					<xs:simpleType name="external_case_reference">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="id">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="number">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="policy_number">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="reference_number">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="status">
+						<xs:restriction base="string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType name="process_type">
+						<xs:restriction base="string">
+							<xs:maxLength value="100"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:complexType name="links">
+						<xs:sequence>
+							<xs:complexType name="link">
+								<xs:sequence>
+									<xs:element name="rel" type="xs:string" minOccurs="0"/>
+									<xs:element name="type" type="xs:string" minOccurs="1"/>
+									<xs:element name="title" type="xs:string" minOccurs="0"/>
+									<xs:element name="href" type="xs:string" minOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="number_of_records" type="xs:integer" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="result">
+		<xs:sequence>
+			<xs:simpleType name="id">
+				<xs:restriction base="string">
+					<xs:maxLength value="18"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

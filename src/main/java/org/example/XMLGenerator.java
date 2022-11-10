@@ -44,7 +44,7 @@ public class XMLGenerator {
             // Write string to file
             java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
 
-            AdapterRefs adapterRefs = new AdapterRefs(openAPI, path);
+            AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), openAPI, path);
         }
     }
 }

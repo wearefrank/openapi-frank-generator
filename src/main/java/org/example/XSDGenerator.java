@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
 public class XSDGenerator {
 
     OpenAPI openAPI;
-    public void execute(OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
+    public void execute(String adapterName, OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
 
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
-        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/Converter/Processing/" + "xsd.txt");
+        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/Converter/Processing/" + adapterName + ".txt");
         XmlWriter writer = new XmlWriter(outputStream, true);
         writer.setIncludeXmlDeclaration(true);
         writer.setNewlineAfterXmlDeclaration(true);
@@ -42,7 +42,7 @@ public class XSDGenerator {
         builder.addAttribute("targetNamespace","http://www.example.org");
         builder.addAttribute("elementFormDefault","qualified");
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
-            boolean isRef = refs.contains(entry.getKey());
+            //TODO: use this for check:   boolean isRef = refs.contains(entry.getKey());
             if (refs.contains(entry.getKey())) {
                 Typing result = createXSDEntry(entry.getKey(), entry.getValue());
                 result.AddToBuilder(builder);
@@ -83,8 +83,10 @@ public class XSDGenerator {
                 else if (entry.getItems().get$ref() != null  ) {
                     // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
                     for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()){
-                        if (isContain(innerEntry.getKey(),entry.getItems().get$ref())) {
-                            return createXSDEntry(innerEntry.getKey(), innerEntry.getValue());
+                        if (isContain(innerEntry.getKey(), entry.getItems().get$ref())) {
+                            ComplexType complexType = new ComplexType(key);
+                            complexType.addTyping(createXSDEntry(innerEntry.getKey(), innerEntry.getValue()));
+                            return complexType;
                         }
                     }
                 }
@@ -112,9 +114,9 @@ public class XSDGenerator {
                     // Check if it is OAS mishap
                     if(e.getValue().get$ref() != null){
                         //// REFERENCE ////
-                        complexType.addTyping(new Reference(name, e.getValue().get$ref()));
+                        //complexType.addTyping(new Reference(name, e.getValue().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
-                            if (entry.getKey().equals(e.getValue().get$ref())) {
+                            if (isContain(entry.getKey(), e.getValue().get$ref())) {
                                 complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                             }
                         }
@@ -129,9 +131,9 @@ public class XSDGenerator {
                     // Check if it is a reference to another schema
                     else if (e.getValue().getItems().get$ref() != null) {
                         //// REFERENCE ////
-                        complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
+                        //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
-                            if (entry.getKey().equals(e.getValue().get$ref())) {
+                            if (isContain(entry.getKey(), e.getValue().get$ref())) {
                                 complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                             }
                         }
