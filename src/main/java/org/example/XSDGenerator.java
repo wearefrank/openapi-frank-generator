@@ -24,6 +24,10 @@ import java.util.regex.Pattern;
 public class XSDGenerator {
 
     OpenAPI openAPI;
+
+    // Variable used to store the name of the root element
+    String upperSchemaName;
+
     public void execute(String adapterName, OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
 
@@ -44,6 +48,7 @@ public class XSDGenerator {
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
             //TODO: use this for check:   boolean isRef = refs.contains(entry.getKey());
             if (refs.contains(entry.getKey())) {
+                this.upperSchemaName = entry.getKey();
                 Typing result = createXSDEntry(entry.getKey(), entry.getValue());
                 result.AddToBuilder(builder);
             }
@@ -84,9 +89,13 @@ public class XSDGenerator {
                     // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
                     for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()){
                         if (isContain(innerEntry.getKey(), entry.getItems().get$ref())) {
-                            ComplexType complexType = new ComplexType(key);
+                            Reference reference = new Reference(key);
+
+                            ComplexType complexType = new ComplexType("");
                             complexType.addTyping(createXSDEntry(innerEntry.getKey(), innerEntry.getValue()));
-                            return complexType;
+
+                            reference.addTyping(complexType);
+                            return reference;
                         }
                     }
                 }
@@ -94,9 +103,16 @@ public class XSDGenerator {
             } catch (NullPointerException e) {
                 // Get the properties
                 Map<String, Schema> props = entry.getProperties();
+
+                // Check if it is the root element [thus needing reference status]
+                if (key == this.upperSchemaName){
+                    Reference reference = new Reference(key);
+                    ComplexType complexType = new ComplexType("");
+                    reference.addTyping(RecursiveXSD(props, complexType, required));
+                    return reference;
+                }
                 ComplexType complexType = new ComplexType(key);
                 return RecursiveXSD(props, complexType, required);
-
             }
         } catch (NullPointerException e) {
             System.out.println("[ERROR {createXSDEntry}] - " + e.getMessage());
@@ -117,7 +133,9 @@ public class XSDGenerator {
                         //complexType.addTyping(new Reference(name, e.getValue().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
                             if (isContain(entry.getKey(), e.getValue().get$ref())) {
-                                complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                                Reference reference = new Reference(name);
+                                reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                                complexType.addTyping(reference);
                             }
                         }
                         // TODO: fix that isContain also implemented here!!!
@@ -134,7 +152,9 @@ public class XSDGenerator {
                         //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
                             if (isContain(entry.getKey(), e.getValue().get$ref())) {
-                                complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                                Reference reference = new Reference(name);
+                                reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
+                                complexType.addTyping(reference);
                             }
                         }
                         // TODO: fix that isContain also implemented here!!!

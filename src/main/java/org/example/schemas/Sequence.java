@@ -27,4 +27,9 @@ public class Sequence {
             }
         }
     }
+    public void SilentAddSequenceToBuilder(SaxElementBuilder builder) throws SAXException {
+        for (Element element : this.elements) {
+            element.AddElementToBuilder(builder);
+        }
+    }
 }

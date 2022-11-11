@@ -1,22 +1,27 @@
 package org.example.schemas.Types;
 
 import nl.nn.adapterframework.xml.SaxElementBuilder;
+import org.example.schemas.Sequence;
 import org.xml.sax.SAXException;
 
 public class Reference extends Typing {
     private String name;
-    private String type;
+    private Sequence sequence;
 
-    public Reference(String name, String type) {
+    public Reference(String name) {
         this.name = name;
-        this.type = type;
+        this.sequence = new Sequence();
+    }
+
+    public void addTyping(Typing typing) {
+        this.sequence.addTyping(typing);
     }
 
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
         try(SaxElementBuilder subElement = builder.startElement("xs:element")){
             subElement.addAttribute("name", this.name);
-            subElement.addAttribute("type", this.type);
+            this.sequence.SilentAddSequenceToBuilder(subElement);
         }
     }
 }

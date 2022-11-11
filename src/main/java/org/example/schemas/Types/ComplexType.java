@@ -28,7 +28,9 @@ public class ComplexType extends Typing {
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
         try(SaxElementBuilder subElement = builder.startElement("xs:complexType")) {
-            subElement.addAttribute("name", this.name);
+            if (this.name != "") {
+                subElement.addAttribute("name", this.name);
+            }
             this.sequence.AddSequenceToBuilder(subElement);
         }
     }
