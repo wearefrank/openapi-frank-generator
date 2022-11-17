@@ -7,7 +7,6 @@
             <ApiListener name="ApiListener-cases/{case_id}" method="PATCH" uriPattern="/cases/{case_id}" produces="ANY"/>
         </Receiver>
         <Pipeline>
-            
             <Exits>
                 <Exit path="EXIT"               state="SUCCESS" code="200" />
                 <Exit path="NotModified"        state="SUCCESS" code="304" />
@@ -18,6 +17,7 @@
                 <Exit path="ServerError"        state="ERROR"   code="500" />
                 <Exit path="Timeout"            state="ERROR"   code="504" />
             </Exits>
+
             <FixedResultPipeline name="Helloworld" result="Hello World!"/>
 
             <Json2XmlInputValidator
@@ -25,54 +25,82 @@
                                    root="FindDocuments_Request"
                                    responseRoot="FindDocuments_Response,FindDocuments_Error"
                                    deepSearch="true">
-                <Param name="schemaName"                sessionKey="schemaName"/>
-                <Param name="requestUserId"             sessionKey="requestUserId"/>
-                <Param name="includeMedicalDocuments"   sessionKey="includeMedicalDocuments"/>
-                <Param name="maxItems"                  sessionKey="maxItems" type="INTEGER"/>
-                <Param name="skipCount"                 sessionKey="skipCount"/>
-                <Param name="sortAttribute"             sessionKey="sortAttribute"/>
-                <Param name="sortOrder"                 sessionKey="sortOrder"/>
-                <Param name="agreementNumber"           sessionKey="agreementNumber"/>
-                <Param name="agreementNumberType"       sessionKey="agreementNumberType"/>
-                <Param name="authorizedTo"              sessionKey="authorizedTo"/>
-                <Param name="birthDate"                 sessionKey="birthDate"/>
-                <Param name="businessUnit"              sessionKey="businessUnit"/>
-                <Param name="claimNumber"               sessionKey="claimNumber"/>
-                <Param name="contractNumber"            sessionKey="contractNumber"/>
-                <Param name="contractNumberHolding"     sessionKey="contractNumberHolding"/>
-                <Param name="descriptionProductGroup"   sessionKey="descriptionProductGroup"/>
-                <Param name="documentDetail"            sessionKey="documentDetail"/>
-                <Param name="documentRelationId"        sessionKey="documentRelationId"/>
-                <Param name="documentRouting"           sessionKey="documentRouting"/>
-                <Param name="documentTitle"             sessionKey="documentTitle"/>
-                <Param name="documentType"              sessionKey="documentType"/>
-                <Param name="externalDocumentId"        sessionKey="externalDocumentId"/>
-                <Param name="IBAN"                      sessionKey="IBAN"/>
-                <Param name="label"                     sessionKey="label"/>
-                <Param name="language"                  sessionKey="language"/>
-                <Param name="nameHolding"               sessionKey="nameHolding"/>
-                <Param name="nameInsured"               sessionKey="nameInsured"/>
-                <Param name="nameOrganisation"          sessionKey="nameOrganisation"/>
-                <Param name="namePolicyHolder"          sessionKey="namePolicyHolder"/>
-                <Param name="organisationId"            sessionKey="organisationId"/>
-                <Param name="partnerGold"               sessionKey="partnerGold"/>
-                <Param name="partnerIntermediary"       sessionKey="partnerIntermediary"/>
-                <Param name="partnerSilver"             sessionKey="partnerSilver"/>
-                <Param name="processId"                 sessionKey="processId"/>
-                <Param name="productCode"               sessionKey="productCode"/>
-                <Param name="quotationNumber"           sessionKey="quotationNumber"/>
-                <Param name="referenceDate"             sessionKey="referenceDate"/>
-                <Param name="requestNumber"             sessionKey="requestNumber"/>
-                <Param name="requiredByLawId"           sessionKey="requiredByLawId"/>
-                <Param name="subject"                   sessionKey="subject"/>
-                <Param name="VTA_ID"                    sessionKey="VTA_ID"/>
-                <Param name="year"                      sessionKey="year"/>
-                <Param name="archiveDateBegin"          sessionKey="archiveDateBegin"/>
-                <Param name="archiveDateEnd"            sessionKey="archiveDateEnd"/>
-                <Param name="issuedDateBegin"           sessionKey="issuedDateBegin"/>
-                <Param name="issuedDateEnd"             sessionKey="issuedDateEnd"/>
-                <Param name="referenceDateBegin"        sessionKey="referenceDateBegin"/>
-                <Param name="referenceDateEnd"          sessionKey="referenceDateEnd"/>
+
+                
+                <Param name="case_id" path="case_id" />
+                
+                <Param name="id_type" path="id_type" />
+                
+                <Param name="type" path="type" />
+                
+                <Param name="title" path="title" />
+                
+                <Param name="status" path="status" />
+                
+                <Param name="detail" path="detail" />
+                
+                <Param name="instance" path="instance" />
+                
+                <Param name="id" path="id" />
+                
+                <Param name="accountId" path="accountId" />
+                
+                <Param name="number" path="number" />
+                
+                <Param name="product_code" path="product_code" />
+                
+                <Param name="source_id" path="source_id" />
+                
+                <Param name="branche" path="branche" />
+                
+                <Param name="call_datetime" path="call_datetime" />
+                
+                <Param name="call_phone" path="call_phone" />
+                
+                <Param name="channel" path="channel" />
+                
+                <Param name="completed_by" path="completed_by" />
+                
+                <Param name="contact_id" path="contact_id" />
+                
+                <Param name="customer_id" path="customer_id" />
+                
+                <Param name="description_addition" path="description_addition" />
+                
+                <Param name="estimated_end_date" path="estimated_end_date" />
+                
+                <Param name="external_case_reference" path="external_case_reference" />
+                
+                <Param name="external_opportunity_reference" path="external_opportunity_reference" />
+                
+                <Param name="owner" path="owner" />
+                
+                <Param name="portfolio_number" path="portfolio_number" />
+                
+                <Param name="priority" path="priority" />
+                
+                <Param name="process_type" path="process_type" />
+                
+                <Param name="reference_number" path="reference_number" />
+                
+                <Param name="related_case_reference" path="related_case_reference" />
+                
+                <Param name="relevant_for_type" path="relevant_for_type" />
+                
+                <Param name="reprocess" path="reprocess" />
+                
+                <Param name="requestor_role" path="requestor_role" />
+                
+                <Param name="required_role_agent" path="required_role_agent" />
+                
+                <Param name="status" path="status" />
+                
+                <Param name="subject" path="subject" />
+                
+                <Param name="type" path="type" />
+                
+                <Param name="userId" path="userId" />
+                
 
                 <Forward name="success"     path="Build_query" />
                 <Forward name="parserError" path="NotWellFormed" />

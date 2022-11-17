@@ -16,11 +16,13 @@ public class AdapterJsonfiyer {
     Map.Entry<String, PathItem> path;
     OpenAPI openAPI;
     String fileName;
+    AdapterRefs adapterRefs;
 
-    public AdapterJsonfiyer(OpenAPI openAPI, Map.Entry<String, PathItem> path) {
+    public AdapterJsonfiyer(OpenAPI openAPI, Map.Entry<String, PathItem> path, AdapterRefs adapterRefs) {
         this.path = path;
         this.openAPI = openAPI;
         this.fileName = path.getKey().substring(1).replace("/", "-") + "_Configuration.json";
+        this.adapterRefs = adapterRefs;
     }
 
     // Convert string to JSON
@@ -44,7 +46,17 @@ public class AdapterJsonfiyer {
         apiListenerJson.put("uriPattern", new ApiListenerClass(this.path).getUriPattern());
         apiListenerJson.put("produces", new ApiListenerClass(this.path).getProduces());
         adapterJson.put("apiListener", apiListenerJson);
-        // Array of key value pairs
+        // Add the adapterRefs
+        JSONObject adapterRefsJson = new JSONObject();
+        adapterRefsJson.put("schema", adapterRefs.schemaLocation);
+        adapterRefsJson.put("root", adapterRefs.root);
+        adapterRefsJson.put("responseRoot",adapterRefs.responseRoot);
+        adapterJson.put("adapterRefs", adapterRefsJson);
+
+        // instantiate paramSingleton
+        String[] params = ParamSingleton.getInstance().getParams();
+        // add the params as a JSONObject
+        adapterJson.put("parameters", params);
 
         // Return the JSONObject
         return adapterJson;

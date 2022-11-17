@@ -1,14 +1,14 @@
 package org.example.adapter;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ParamSingleton {
     // Singleton instance
 
     private static ParamSingleton instance = null;
-    private List<String> params;
+    private ArrayList<String> params;
     private ParamSingleton() {
-        this.params = null;
+        this.params = new ArrayList<>();
     }
 
     public static ParamSingleton getInstance() {
@@ -36,6 +36,5 @@ public class ParamSingleton {
 
     // reset list
     public void resetParams(){
-        this.params = null;
-    }
+        this.params = new ArrayList<>(); }
 }

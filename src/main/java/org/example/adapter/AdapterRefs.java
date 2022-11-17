@@ -17,9 +17,15 @@ import java.util.ArrayList;
 public class AdapterRefs {
     private ArrayList<String> refs;
 
+    String schemaLocation;
+    String root;
+    String responseRoot;
+
     public AdapterRefs(String adapterName, OpenAPI openAPI, Map.Entry<String, PathItem> path) throws FileNotFoundException, SAXException {
         this.refs = new ArrayList<>();
         List<Parameter> parameters = null;
+
+        schemaLocation = System.getProperty("user.dir") + "/Converter/Processing/" + adapterName + ".txt";
 
         // TODO: if more api types added, add them here
         if(path.getValue().getGet() != null){
@@ -40,7 +46,18 @@ public class AdapterRefs {
         }
 
         XSDGenerator xsdGenerator = new XSDGenerator();
-        xsdGenerator.execute(adapterName, openAPI, uniqueRefs(), parameters);
+        xsdGenerator.execute(schemaLocation, openAPI, uniqueRefs(), parameters);
+
+        root = uniqueRefs().get(0);
+
+        for (int i = 1 ; i < uniqueRefs().size() ; i++) {
+            // if the last value, add a closing tag
+            if (i == uniqueRefs().size() - 1) {
+                responseRoot += uniqueRefs().get(i);
+            } else {
+                responseRoot += uniqueRefs().get(i) + ",";
+            }
+        }
     }
     // fill array with references
     public void fillRefs(ApiResponses response){

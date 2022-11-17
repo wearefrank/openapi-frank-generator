@@ -23,6 +23,10 @@ public class XMLGenerator {
             // Create a new AdapterClass
             AdapterClass adapter = new AdapterClass(openAPI, path);
 
+            //// Generate XSD ////
+            // Generate XSD for the adapter
+            AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), openAPI, path);
+
             //// Template ////
             // Get the template file
             File templateFile = new File(System.getProperty("user.dir") + "/src/main/java/org/example/template.hbs");
@@ -33,7 +37,7 @@ public class XMLGenerator {
             Template template = handlebars.compileInline(templateString);
 
             // Create JSON and apply the template
-            AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, path);
+            AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, path, adapterRefs);
             String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
             // Print the template
@@ -44,7 +48,7 @@ public class XMLGenerator {
             // Write string to file
             java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
 
-            AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), openAPI, path);
+
         }
     }
 }

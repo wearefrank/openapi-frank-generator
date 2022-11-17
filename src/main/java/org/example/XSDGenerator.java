@@ -33,13 +33,14 @@ public class XSDGenerator {
     // Used to store outside parameters given from the xml
     List<Parameter> parameters;
 
-    public void execute(String adapterName, OpenAPI openAPI, ArrayList<String> refs, List<Parameter> parameters) throws SAXException, FileNotFoundException {
+    public void execute(String schemaLocation, OpenAPI openAPI, ArrayList<String> refs, List<Parameter> parameters) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
         this.parameters = parameters;
+        ParamSingleton.getInstance().resetParams();
 
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
-        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "/Converter/Processing/" + adapterName + ".txt");
+        FileOutputStream outputStream = new FileOutputStream(schemaLocation);
         XmlWriter writer = new XmlWriter(outputStream, true);
         writer.setIncludeXmlDeclaration(true);
         writer.setNewlineAfterXmlDeclaration(true);
