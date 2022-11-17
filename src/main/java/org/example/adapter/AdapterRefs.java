@@ -3,26 +3,28 @@ package org.example.adapter;
 import com.hierynomus.smbj.share.Open;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.example.XSDGenerator;
 import org.xml.sax.SAXException;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AdapterRefs {
     private ArrayList<String> refs;
 
     public AdapterRefs(String adapterName, OpenAPI openAPI, Map.Entry<String, PathItem> path) throws FileNotFoundException, SAXException {
         this.refs = new ArrayList<>();
+        List<Parameter> parameters = null;
 
         // TODO: if more api types added, add them here
         if(path.getValue().getGet() != null){
             fillRefs(path.getValue().getGet().getResponses());
+            parameters = path.getValue().getGet().getParameters();
         }
         if(path.getValue().getPost() != null){
             fillRefs(path.getValue().getPost().getResponses());
@@ -38,8 +40,7 @@ public class AdapterRefs {
         }
 
         XSDGenerator xsdGenerator = new XSDGenerator();
-        xsdGenerator.execute(adapterName, openAPI, uniqueRefs());
-        System.out.println(uniqueRefs());
+        xsdGenerator.execute(adapterName, openAPI, uniqueRefs(), parameters);
     }
     // fill array with references
     public void fillRefs(ApiResponses response){
@@ -58,17 +59,9 @@ public class AdapterRefs {
             // add the reference to the array
             String[] parts = ref.split("/");
             String lastPart = parts[parts.length - 1];
-            System.out.println(lastPart);
 
             this.refs.add(lastPart);
             i++;
-        }
-    }
-
-    //// print the refs
-    public void printRefs() {
-        for (String ref : this.refs) {
-            System.out.println(ref);
         }
     }
 

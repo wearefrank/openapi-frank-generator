@@ -5,6 +5,8 @@
 			<xs:sequence>
 				<xs:complexType name="error">
 					<xs:sequence>
+						<xs:element name="case_id" type="string"/>
+						<xs:element name="id_type" type="string"/>
 						<xs:element name="type" type="xs:string" minOccurs="1"/>
 						<xs:element name="title" type="xs:string" minOccurs="1"/>
 						<xs:element name="status" type="xs:string" minOccurs="1"/>

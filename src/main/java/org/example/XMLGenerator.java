@@ -37,7 +37,7 @@ public class XMLGenerator {
             String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
             // Print the template
-            System.out.println(adapterTemplate);
+            //System.out.println(adapterTemplate);
 
             // Export the template to xml file
             File xmlFile = new File(System.getProperty("user.dir") + "/Converter/Processing/" + adapter.getAdapterName() + ".xml");

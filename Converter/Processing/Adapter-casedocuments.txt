@@ -3,6 +3,9 @@
 	<xs:element name="casedocuments">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="case_id" type="string"/>
+				<xs:element name="case_number" type="string"/>
+				<xs:element name="external_case_reference" type="string"/>
 				<xs:complexType name="casedocument">
 					<xs:sequence>
 						<xs:simpleType name="archive">

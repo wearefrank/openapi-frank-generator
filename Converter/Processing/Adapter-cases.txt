@@ -5,6 +5,12 @@
 			<xs:sequence>
 				<xs:complexType name="error">
 					<xs:sequence>
+						<xs:element name="external_case_reference" type="string"/>
+						<xs:element name="case_number" type="string"/>
+						<xs:element name="type" type="string"/>
+						<xs:element name="status" type="string"/>
+						<xs:element name="reference_number" type="string"/>
+						<xs:element name="policy_number" type="string"/>
 						<xs:element name="type" type="xs:string" minOccurs="1"/>
 						<xs:element name="title" type="xs:string" minOccurs="1"/>
 						<xs:element name="status" type="xs:string" minOccurs="1"/>

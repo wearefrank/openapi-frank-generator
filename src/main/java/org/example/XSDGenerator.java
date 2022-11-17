@@ -2,9 +2,11 @@ package org.example;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import nl.nn.adapterframework.xml.PrettyPrintFilter;
 import nl.nn.adapterframework.xml.SaxDocumentBuilder;
 import nl.nn.adapterframework.xml.XmlWriter;
+import org.example.adapter.ParamSingleton;
 import org.example.schemas.*;
 import org.example.schemas.Types.ComplexType;
 import org.example.schemas.Types.Reference;
@@ -25,11 +27,15 @@ public class XSDGenerator {
 
     OpenAPI openAPI;
 
-    // Variable used to store the name of the root element
+    // Used to store the name of the root element
     String upperSchemaName;
 
-    public void execute(String adapterName, OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
+    // Used to store outside parameters given from the xml
+    List<Parameter> parameters;
+
+    public void execute(String adapterName, OpenAPI openAPI, ArrayList<String> refs, List<Parameter> parameters) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
+        this.parameters = parameters;
 
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
@@ -123,6 +129,20 @@ public class XSDGenerator {
 
     public ComplexType RecursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required) {
         for (Map.Entry<String, Schema> e : props.entrySet()) {
+            // Check if outer parameters are given
+            // TODO: Currently just given to first complexType, could pose problem when not sorted correctly
+
+            if (this.parameters != null) {
+                for (Parameter parameter : this.parameters) {
+                    Element element = new Element(parameter.getName());
+                    element.setType(parameter.getSchema().getType());
+                    complexType.addElement(element);
+
+                    // Add parameter to ParamSingleton
+                    ParamSingleton.getInstance().addParam(parameter.getName());
+                }
+                this.parameters = null;
+            }
             String name = e.getKey();
             // Check if the property has the word Type in it
             try {
@@ -165,6 +185,9 @@ public class XSDGenerator {
                         SimpleType simple = new SimpleType(name, e.getValue().getType());
                         simple = getSimpleTypeAttributes(e, simple);
                         complexType.addTyping(simple);
+
+                        // Add simpletype to ParamSingleton
+                        ParamSingleton.getInstance().addParam(name);
                     }
                     else {
                         //// RECURSION, NORMAL ////
@@ -176,12 +199,18 @@ public class XSDGenerator {
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
+
+                    // Add simpletype to ParamSingleton
+                    ParamSingleton.getInstance().addParam(name);
                 }
                 else if (checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
                     //// SIMPLETYPE ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
+
+                    // Add simpletype to ParamSingleton
+                    ParamSingleton.getInstance().addParam(name);
                 }
                 else {
                     //// ELEMENT ////
@@ -189,6 +218,9 @@ public class XSDGenerator {
                     element.setType(getType(e));
                     element = getElementAttributes(e, element, required);
                     complexType.addElement(element);
+
+                    // add element to ParamSingleton
+                    ParamSingleton.getInstance().addParam(name);
                 }
             }
             catch (NullPointerException ex) {
