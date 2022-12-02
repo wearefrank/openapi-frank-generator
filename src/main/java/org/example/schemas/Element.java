@@ -1,5 +1,6 @@
 package org.example.schemas;
 
+import lombok.Getter;
 import lombok.Setter;
 import nl.nn.adapterframework.xml.SaxElementBuilder;
 import org.example.schemas.Types.Typing;
@@ -12,8 +13,10 @@ public class Element {
     private String name;
     private String type;
     @Setter
+    @Getter // TODO: GETTER Only used for testing
     private Integer minOccurs;
     @Setter
+    @Getter // TODO: GETTER Only used for testing
     private Integer maxOccurs;
     private Typing object;
 

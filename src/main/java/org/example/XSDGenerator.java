@@ -83,19 +83,21 @@ public class XSDGenerator {
                 // Do nothing
             }
 
+            System.out.println(required);
+
             try {
                 //// SIMPLETYPE ////
                 if (entry.getType() != null && entry.getEnum() != null) {
                     // TODO: Check if this is correct; map.entry<String, Schema> was used
                     SimpleType simpleType = new SimpleType(key, entry.getType());
-                    simpleType = getSimpleTypeAttributes((Map.Entry<String, Schema>) entry, simpleType);
+                    simpleType = HelperClass.getSimpleTypeAttributes((Map.Entry<String, Schema>) entry, simpleType);
                     return simpleType;
                 }
                 //// REFERENCE ////
                 else if (entry.getItems().get$ref() != null  ) {
                     // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
                     for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()){
-                        if (isContain(innerEntry.getKey(), entry.getItems().get$ref())) {
+                        if (HelperClass.isContain(innerEntry.getKey(), entry.getItems().get$ref())) {
                             Reference reference = new Reference(key);
 
                             ComplexType complexType = new ComplexType("");
@@ -153,7 +155,7 @@ public class XSDGenerator {
                         //// REFERENCE ////
                         //complexType.addTyping(new Reference(name, e.getValue().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
-                            if (isContain(entry.getKey(), e.getValue().get$ref())) {
+                            if (HelperClass.isContain(entry.getKey(), e.getValue().get$ref())) {
                                 Reference reference = new Reference(name);
                                 reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                                 complexType.addTyping(reference);
@@ -172,7 +174,7 @@ public class XSDGenerator {
                         //// REFERENCE ////
                         //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
-                            if (isContain(entry.getKey(), e.getValue().get$ref())) {
+                            if (HelperClass.isContain(entry.getKey(), e.getValue().get$ref())) {
                                 Reference reference = new Reference(name);
                                 reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                                 complexType.addTyping(reference);
@@ -184,7 +186,7 @@ public class XSDGenerator {
                     else if (e.getValue().getItems().getProperties() == null) {
                         //// RECURSION, ARRAY ITEMS ////
                         SimpleType simple = new SimpleType(name, e.getValue().getType());
-                        simple = getSimpleTypeAttributes(e, simple);
+                        simple = HelperClass.getSimpleTypeAttributes(e, simple);
                         complexType.addTyping(simple);
 
                         // Add simpletype to ParamSingleton
@@ -198,16 +200,16 @@ public class XSDGenerator {
                 else if (e.getValue().getItems() != null && e.getValue().getItems().getProperties() == null)  {
                     //// RECURSION, ARRAY ITEMS ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
-                    simple = getSimpleTypeAttributes(e, simple);
+                    simple = HelperClass.getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
 
                     // Add simpletype to ParamSingleton
                     ParamSingleton.getInstance().addParam(name);
                 }
-                else if (checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
+                else if (HelperClass.checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
                     //// SIMPLETYPE ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
-                    simple = getSimpleTypeAttributes(e, simple);
+                    simple = HelperClass.getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
 
                     // Add simpletype to ParamSingleton
@@ -217,7 +219,7 @@ public class XSDGenerator {
                     //// ELEMENT ////
                     Element element = new Element(name);
                     element.setType(getType(e));
-                    element = getElementAttributes(e.getValue(), element, required);
+                    element = HelperClass.getElementAttributes(e.getValue(), element, required);
                     complexType.addElement(element);
 
                     // add element to ParamSingleton
@@ -251,63 +253,5 @@ public class XSDGenerator {
         }
 
         return e.getKey() + "Type";
-    }
-
-    /**
-     * Method to get all the SimpleTypes attributes
-     *
-     * @param e - the schema element. object - the object to add the attributes to
-     * @return the object with the attributes
-     */
-    public SimpleType getSimpleTypeAttributes(Map.Entry<String, Schema> e, SimpleType object) {
-        object.setMinInclusive(e.getValue().getMinimum());
-        object.setMaxInclusive(e.getValue().getMaximum());
-        object.setMinLength(e.getValue().getMinLength());
-        object.setMaxLength(e.getValue().getMaxLength());
-        object.setPattern(e.getValue().getPattern());
-        object.setEnumeration(e.getValue().getEnum());
-        return object;
-    }
-    // Check if the element is a simple type
-    public boolean checkIfSimpleType(Map.Entry<String, Schema> e, SimpleType object) {
-        if (e.getValue().getMinimum() != null || e.getValue().getMaximum() != null || e.getValue().getMinLength() != null || e.getValue().getMaxLength() != null || e.getValue().getPattern() != null || e.getValue().getEnum() != null) {
-            object.setMinInclusive(e.getValue().getMinimum());
-            object.setMaxInclusive(e.getValue().getMaximum());
-            object.setMinLength(e.getValue().getMinLength());
-            object.setMaxLength(e.getValue().getMaxLength());
-            object.setPattern(e.getValue().getPattern());
-            object.setEnumeration(e.getValue().getEnum());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Method to get all the Element attributes
-     *
-     * @param e - the schema element.
-     * @param object - the object to add the attributes to.
-     * @param required - the list of required elements.
-     * @return the object with the attributes
-     */
-    public Element getElementAttributes(Schema schema, Element object, List<String> required) {
-        if (schema.getMinItems() != null) {
-            object.setMinOccurs(schema.getMinItems());
-        } else {
-            object.setMinOccursCheck(required);
-        }
-        object.setMaxOccurs(schema.getMaxItems());
-        return object;
-    }
-
-
-    private static boolean isContain(String source, String reference) {
-        String[] parts = reference.split("/");
-        String subItem = parts[parts.length - 1];
-
-        String pattern = "\\b"+subItem+"\\b";
-        Pattern p=Pattern.compile(pattern);
-        Matcher m=p.matcher(source);
-        return m.find();
     }
 }

@@ -62,5 +62,11 @@
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <scope>test</scope>
+            <artifactId>mockito-core</artifactId>
+            <version>4.9.0</version>
+        </dependency>
     </dependencies>
 </project>
