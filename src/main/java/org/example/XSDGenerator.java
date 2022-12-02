@@ -217,7 +217,7 @@ public class XSDGenerator {
                     //// ELEMENT ////
                     Element element = new Element(name);
                     element.setType(getType(e));
-                    element = getElementAttributes(e, element, required);
+                    element = getElementAttributes(e.getValue(), element, required);
                     complexType.addElement(element);
 
                     // add element to ParamSingleton
@@ -290,13 +290,13 @@ public class XSDGenerator {
      * @param required - the list of required elements.
      * @return the object with the attributes
      */
-    public Element getElementAttributes(Map.Entry<String, Schema> e, Element object, List<String> required) {
-        if (e.getValue().getMinItems() != null) {
-            object.setMinOccurs(e.getValue().getMinItems());
+    public Element getElementAttributes(Schema schema, Element object, List<String> required) {
+        if (schema.getMinItems() != null) {
+            object.setMinOccurs(schema.getMinItems());
         } else {
             object.setMinOccursCheck(required);
         }
-        object.setMaxOccurs(e.getValue().getMaxItems());
+        object.setMaxOccurs(schema.getMaxItems());
         return object;
     }
 
