@@ -7,6 +7,7 @@ import org.example.schemas.HelperClass;
 import org.example.schemas.Sequence;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
@@ -40,7 +41,32 @@ public class TestGetElementAttribute {
     }
     @Test
     public void test2 (){
+        // Mock the schema
+        Schema schema = mock (Schema.class);
+        when (schema.getMinItems()).thenReturn(null);
+        when (schema.getMaxItems()).thenReturn(8);
 
+        Element element = new Element("testElement");
+
+        element = HelperClass.getElementAttributes(schema, element, null);
+
+        assertTrue(element.getMinOccurs() == 0 && element.getMaxOccurs() == 8);
+    }
+    @Test
+    public void test3 (){
+        // Mock the schema
+        Schema schema = mock (Schema.class);
+        when (schema.getMinItems()).thenReturn(null);
+        when (schema.getMaxItems()).thenReturn(5);
+
+        Element element = new Element("testElement");
+
+        // list of elements
+        List<String> required = List.of("testElement");
+
+        element = HelperClass.getElementAttributes(schema, element, required);
+
+        assertTrue(element.getMinOccurs() == 1 && element.getMaxOccurs() == 5);
     }
 }
 
