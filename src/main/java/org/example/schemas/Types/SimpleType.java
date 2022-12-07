@@ -30,39 +30,41 @@ public class SimpleType extends Typing {
 
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
-        try(SaxElementBuilder subElement = builder.startElement("xs:simpleType")){
+        try(SaxElementBuilder subElement = builder.startElement("xs:element")){
             subElement.addAttribute("name", this.name);
-            try(SaxElementBuilder restriction = subElement.startElement("xs:restriction")){
-                restriction.addAttribute("base", this.type);
-                if (this.maxInclusive != null) {
-                    try(SaxElementBuilder maxInclusive = restriction.startElement("xs:maxInclusive")){
-                        maxInclusive.addAttribute("value", String.valueOf(this.maxInclusive));
+            try(SaxElementBuilder simpleType = subElement.startElement("xs:simpleType")){
+                try(SaxElementBuilder restriction = simpleType.startElement("xs:restriction")){
+                    restriction.addAttribute("base", "xs:" + this.type);
+                    if (this.maxInclusive != null) {
+                        try(SaxElementBuilder maxInclusive = restriction.startElement("xs:maxInclusive")){
+                            maxInclusive.addAttribute("value", String.valueOf(this.maxInclusive));
+                        }
                     }
-                }
-                if (this.minInclusive != null) {
-                    try(SaxElementBuilder minInclusive = restriction.startElement("xs:minInclusive")){
-                        minInclusive.addAttribute("value", String.valueOf(this.minInclusive));
+                    if (this.minInclusive != null) {
+                        try(SaxElementBuilder minInclusive = restriction.startElement("xs:minInclusive")){
+                            minInclusive.addAttribute("value", String.valueOf(this.minInclusive));
+                        }
                     }
-                }
-                if (this.minLength != null) {
-                    try(SaxElementBuilder minLength = restriction.startElement("xs:minLength")){
-                        minLength.addAttribute("value", this.minLength);
+                    if (this.minLength != null) {
+                        try(SaxElementBuilder minLength = restriction.startElement("xs:minLength")){
+                            minLength.addAttribute("value", this.minLength);
+                        }
                     }
-                }
-                if (this.maxLength != null) {
-                    try(SaxElementBuilder maxLength = restriction.startElement("xs:maxLength")){
-                        maxLength.addAttribute("value", this.maxLength);
+                    if (this.maxLength != null) {
+                        try(SaxElementBuilder maxLength = restriction.startElement("xs:maxLength")){
+                            maxLength.addAttribute("value", this.maxLength);
+                        }
                     }
-                }
-                if (this.pattern != null) {
-                    try(SaxElementBuilder pattern = restriction.startElement("xs:pattern")){
-                        pattern.addAttribute("value", this.pattern);
+                    if (this.pattern != null) {
+                        try(SaxElementBuilder pattern = restriction.startElement("xs:pattern")){
+                            pattern.addAttribute("value", this.pattern);
+                        }
                     }
-                }
-                if (this.enumeration != null) {
-                    for (Object o : this.enumeration) {
-                        try(SaxElementBuilder enumeration = restriction.startElement("xs:enumeration")){
-                            enumeration.addAttribute("value", String.valueOf(o));
+                    if (this.enumeration != null) {
+                        for (Object o : this.enumeration) {
+                            try (SaxElementBuilder enumeration = restriction.startElement("xs:enumeration")) {
+                                enumeration.addAttribute("value", String.valueOf(o));
+                            }
                         }
                     }
                 }

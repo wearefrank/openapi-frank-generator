@@ -55,7 +55,7 @@ public class Element {
         } else {
             try(SaxElementBuilder subElement = builder.startElement("xs:element")){
                 subElement.addAttribute("name", this.name);
-                subElement.addAttribute("type", this.type);
+                subElement.addAttribute("type", "xs:" + this.type);
                 if (this.minOccurs != null) {
                     subElement.addAttribute("minOccurs", this.minOccurs.toString());
                 }

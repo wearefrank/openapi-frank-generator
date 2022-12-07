@@ -3,83 +3,113 @@
 	<xs:element name="casedocuments">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="case_id" type="string"/>
-				<xs:element name="case_number" type="string"/>
-				<xs:element name="external_case_reference" type="string"/>
-				<xs:complexType name="casedocument">
-					<xs:sequence>
-						<xs:simpleType name="archive">
-							<xs:restriction base="string">
-								<xs:maxLength value="6"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="archive_document_id">
-							<xs:restriction base="string">
-								<xs:maxLength value="50"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="case_id">
-							<xs:restriction base="string">
-								<xs:maxLength value="50"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="detail">
-							<xs:restriction base="string">
-								<xs:maxLength value="50"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="external_case_document_reference">
-							<xs:restriction base="string">
-								<xs:maxLength value="50"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="external_document_type">
-							<xs:restriction base="string">
-								<xs:maxLength value="255"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="metadata">
-							<xs:restriction base="string">
-								<xs:maxLength value="32000"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="name">
-							<xs:restriction base="string">
-								<xs:maxLength value="32000"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="product_group">
-							<xs:restriction base="string">
-								<xs:maxLength value="40"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="routing">
-							<xs:restriction base="string">
-								<xs:maxLength value="8"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="serial_number">
-							<xs:restriction base="string">
-								<xs:maxLength value="8"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="status">
-							<xs:restriction base="string">
-								<xs:maxLength value="255"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="title">
-							<xs:restriction base="string">
-								<xs:maxLength value="255"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="type">
-							<xs:restriction base="string">
-								<xs:maxLength value="50"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:sequence>
-				</xs:complexType>
+				<xs:element name="case_id" type="xs:string"/>
+				<xs:element name="case_number" type="xs:string"/>
+				<xs:element name="external_case_reference" type="xs:string"/>
+				<xs:element name="casedocument">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="archive">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="6"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="archive_document_id">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="case_id">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="detail">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="external_case_document_reference">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="external_document_type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="255"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="metadata">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="32000"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="name">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="32000"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="product_group">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="40"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="routing">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="serial_number">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="status">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="255"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="title">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="255"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="number_of_records" type="xs:integer" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -87,15 +117,17 @@
 	<xs:element name="errors">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:complexType name="error">
-					<xs:sequence>
-						<xs:element name="type" type="xs:string" minOccurs="1"/>
-						<xs:element name="title" type="xs:string" minOccurs="1"/>
-						<xs:element name="status" type="xs:string" minOccurs="1"/>
-						<xs:element name="detail" type="xs:string" minOccurs="0"/>
-						<xs:element name="instance" type="xs:string" minOccurs="1"/>
-					</xs:sequence>
-				</xs:complexType>
+				<xs:element name="error">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="type" type="xs:string" minOccurs="1"/>
+							<xs:element name="title" type="xs:string" minOccurs="1"/>
+							<xs:element name="status" type="xs:string" minOccurs="1"/>
+							<xs:element name="detail" type="xs:string" minOccurs="0"/>
+							<xs:element name="instance" type="xs:string" minOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

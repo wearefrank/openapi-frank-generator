@@ -3,176 +3,236 @@
 	<xs:element name="errors">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:complexType name="error">
-					<xs:sequence>
-						<xs:element name="case_id" type="string"/>
-						<xs:element name="id_type" type="string"/>
-						<xs:element name="type" type="xs:string" minOccurs="1"/>
-						<xs:element name="title" type="xs:string" minOccurs="1"/>
-						<xs:element name="status" type="xs:string" minOccurs="1"/>
-						<xs:element name="detail" type="xs:string" minOccurs="0"/>
-						<xs:element name="instance" type="xs:string" minOccurs="1"/>
-					</xs:sequence>
-				</xs:complexType>
+				<xs:element name="error">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="case_id" type="xs:string"/>
+							<xs:element name="id_type" type="xs:string"/>
+							<xs:element name="type" type="xs:string" minOccurs="1"/>
+							<xs:element name="title" type="xs:string" minOccurs="1"/>
+							<xs:element name="status" type="xs:string" minOccurs="1"/>
+							<xs:element name="detail" type="xs:string" minOccurs="0"/>
+							<xs:element name="instance" type="xs:string" minOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="result">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:simpleType name="id">
-					<xs:restriction base="string">
-						<xs:maxLength value="18"/>
-					</xs:restriction>
-				</xs:simpleType>
+				<xs:element name="id">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="18"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="case">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:simpleType name="accountId">
-					<xs:restriction base="string">
-						<xs:maxLength value="18"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:complexType name="agreements">
-					<xs:sequence>
-						<xs:simpleType name="number">
-							<xs:restriction base="integer">
-								<xs:maxInclusive value="99999999"/>
-								<xs:minInclusive value="0"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="product_code">
-							<xs:restriction base="string">
-								<xs:maxLength value="255"/>
-							</xs:restriction>
-						</xs:simpleType>
-						<xs:simpleType name="source_id">
-							<xs:restriction base="string">
-								<xs:maxLength value="255"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:sequence>
-				</xs:complexType>
-				<xs:simpleType name="branche">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
+				<xs:element name="accountId">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="18"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="agreements">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="number">
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:maxInclusive value="99999999"/>
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="product_code">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="255"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="source_id">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="255"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="branche">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 				<xs:element name="call_datetime" type="xs:string" minOccurs="0"/>
-				<xs:simpleType name="call_phone">
-					<xs:restriction base="string">
-						<xs:maxLength value="11"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="channel">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="completed_by">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="contact_id">
-					<xs:restriction base="string">
-						<xs:maxLength value="70"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="customer_id">
-					<xs:restriction base="string">
-						<xs:maxLength value="70"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="description_addition">
-					<xs:restriction base="string">
-						<xs:maxLength value="32000"/>
-					</xs:restriction>
-				</xs:simpleType>
+				<xs:element name="call_phone">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="11"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="channel">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="completed_by">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="contact_id">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="70"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="customer_id">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="70"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="description_addition">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="32000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 				<xs:element name="estimated_end_date" type="xs:string" minOccurs="0"/>
-				<xs:simpleType name="external_case_reference">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="external_opportunity_reference">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="owner">
-					<xs:restriction base="string">
-						<xs:maxLength value="6"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="portfolio_number">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="priority">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="process_type">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="reference_number">
-					<xs:restriction base="string">
-						<xs:maxLength value="100"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="related_case_reference">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="relevant_for_type">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="reprocess">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="requestor_role">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="required_role_agent">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="status">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="subject">
-					<xs:restriction base="string">
-						<xs:maxLength value="255"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="type">
-					<xs:restriction base="string">
-						<xs:maxLength value="100"/>
-					</xs:restriction>
-				</xs:simpleType>
-				<xs:simpleType name="userId">
-					<xs:restriction base="string">
-						<xs:maxLength value="18"/>
-					</xs:restriction>
-				</xs:simpleType>
+				<xs:element name="external_case_reference">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="external_opportunity_reference">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="owner">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="6"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="portfolio_number">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="priority">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="process_type">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="reference_number">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="100"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="related_case_reference">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="relevant_for_type">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="reprocess">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="requestor_role">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="required_role_agent">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="status">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="subject">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="type">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="100"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="userId">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="18"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

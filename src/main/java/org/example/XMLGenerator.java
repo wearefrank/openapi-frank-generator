@@ -12,10 +12,11 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public void execute(OpenAPI openAPI) throws IOException, SAXException {
+    static public void execute(OpenAPI openAPI) throws IOException, SAXException, URISyntaxException {
         Paths paths = openAPI.getPaths();
 
         // For loop going through all the paths and instantiating a new AdapterClass
@@ -29,7 +30,8 @@ public class XMLGenerator {
 
             //// Template ////
             // Get the template file
-            File templateFile = new File(System.getProperty("user.dir") + "/src/main/java/org/example/template.hbs");
+
+            File templateFile = new File(XMLGenerator.class.getResource("/template.hbs").toURI());
             String templateString = new String(java.nio.file.Files.readAllBytes(templateFile.toPath()));
 
             // Create a new Handlebars object

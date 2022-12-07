@@ -6,9 +6,10 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SAXException {
+    public static void main(String[] args) throws IOException, SAXException, URISyntaxException {
 
         //// INITIALIZATION ////
         // get source of current directory

@@ -117,11 +117,13 @@ public class XSDGenerator {
                 if (key == this.upperSchemaName){
                     Reference reference = new Reference(key);
                     ComplexType complexType = new ComplexType("");
-                    reference.addTyping(RecursiveXSD(props, complexType, required));
+                    reference.addTyping(recursiveXSD(props, complexType, required));
                     return reference;
                 }
-                ComplexType complexType = new ComplexType(key);
-                return RecursiveXSD(props, complexType, required);
+                Reference reference = new Reference(key);
+                ComplexType complexType = new ComplexType("");
+                reference.addTyping(recursiveXSD(props, complexType, required));
+                return reference;
             }
         } catch (NullPointerException e) {
             System.out.println("[ERROR {createXSDEntry}] - " + e.getMessage());
@@ -130,7 +132,7 @@ public class XSDGenerator {
         return null;
     }
 
-    public ComplexType RecursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required) {
+    public ComplexType recursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required) {
         for (Map.Entry<String, Schema> e : props.entrySet()) {
             // Check if outer parameters are given
             // TODO: Currently just given to first complexType, could pose problem when not sorted correctly
@@ -175,9 +177,7 @@ public class XSDGenerator {
                         //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
                             if (HelperClass.isContain(entry.getKey(), e.getValue().get$ref())) {
-                                Reference reference = new Reference(name);
-                                reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
-                                complexType.addTyping(reference);
+                                complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                             }
                         }
                         // TODO: fix that isContain also implemented here!!!
@@ -244,14 +244,13 @@ public class XSDGenerator {
 
         if (type != null) {
             if (type.equals("string") || type.equals("integer") || type.equals("boolean")) {
-                return "xs:" + type;
+                return type;
             }
             // Number becomes its own type, array refers to the linksType that is used in OAP
             if (type.equals("number")) {
                 return type + "Type";
             }
         }
-
         return e.getKey() + "Type";
     }
 }
