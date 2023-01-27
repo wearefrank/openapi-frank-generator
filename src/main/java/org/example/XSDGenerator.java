@@ -83,8 +83,6 @@ public class XSDGenerator {
                 // Do nothing
             }
 
-            System.out.println(required);
-
             try {
                 //// SIMPLETYPE ////
                 if (entry.getType() != null && entry.getEnum() != null) {

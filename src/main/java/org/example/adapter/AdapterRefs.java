@@ -25,7 +25,7 @@ public class AdapterRefs {
         this.refs = new ArrayList<>();
         List<Parameter> parameters = null;
 
-        schemaLocation = System.getProperty("user.dir") + "/Converter/Processing/" + adapterName + ".txt";
+        schemaLocation = System.getProperty("user.dir") + "/Converter/Processing/" + adapterName + ".xsd";
 
         // TODO: if more api types added, add them here
         if(path.getValue().getGet() != null){
