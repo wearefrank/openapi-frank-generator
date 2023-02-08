@@ -174,7 +174,7 @@ public class XSDGenerator {
                         //// REFERENCE ////
                         //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
                         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
-                            if (HelperClass.isContain(entry.getKey(), e.getValue().get$ref())) {
+                            if (HelperClass.isContain(entry.getKey(), e.getValue().getItems().get$ref())) {
                                 complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                             }
                         }

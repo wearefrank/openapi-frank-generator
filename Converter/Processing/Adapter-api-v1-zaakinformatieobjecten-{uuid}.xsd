@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org" targetNamespace="http://www.example.org" elementFormDefault="qualified">
+	<xs:element name="Fout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="uuid" type="xs:string"/>
+				<xs:element name="If-None-Match" type="xs:string"/>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ValidatieFout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+				<xs:element name="FieldValidationError">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" minOccurs="1"/>
+							<xs:element name="code" type="xs:string" minOccurs="1"/>
+							<xs:element name="reason" type="xs:string" minOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ZaakInformatieObject">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="uuid" type="xs:string" minOccurs="1"/>
+				<xs:element name="informatieobject">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="zaak">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

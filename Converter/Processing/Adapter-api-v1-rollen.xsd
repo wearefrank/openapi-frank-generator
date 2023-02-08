@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org" targetNamespace="http://www.example.org" elementFormDefault="qualified">
+	<xs:element name="Fout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="zaak" type="xs:string"/>
+				<xs:element name="betrokkene" type="xs:string"/>
+				<xs:element name="betrokkeneType" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__natuurlijkPersoon__inpBsn" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__natuurlijkPersoon__anpIdentificatie" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__natuurlijkPersoon__inpA_nummer" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__nietNatuurlijkPersoon__innNnpId" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__nietNatuurlijkPersoon__annIdentificatie" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__vestiging__vestigingsNummer" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__organisatorischeEenheid__identificatie" type="xs:string"/>
+				<xs:element name="betrokkeneIdentificatie__medewerker__identificatie" type="xs:string"/>
+				<xs:element name="roltype" type="xs:string"/>
+				<xs:element name="omschrijving" type="xs:string"/>
+				<xs:element name="omschrijvingGeneriek" type="xs:string"/>
+				<xs:element name="page" type="xs:integer"/>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PaginatedRolList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="count" type="xs:integer" minOccurs="0"/>
+				<xs:element name="next" type="xs:string" minOccurs="0"/>
+				<xs:element name="previous" type="xs:string" minOccurs="0"/>
+				<xs:element name="Rol">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="url">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="1000"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="uuid" type="xs:string" minOccurs="1"/>
+							<xs:element name="zaak">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="1000"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="betrokkene">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="1000"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Rol">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="uuid" type="xs:string" minOccurs="1"/>
+				<xs:element name="zaak">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="betrokkene">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ValidatieFout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+				<xs:element name="FieldValidationError">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" minOccurs="1"/>
+							<xs:element name="code" type="xs:string" minOccurs="1"/>
+							<xs:element name="reason" type="xs:string" minOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

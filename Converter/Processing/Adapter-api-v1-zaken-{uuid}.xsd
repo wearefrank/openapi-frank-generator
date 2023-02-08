@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org" targetNamespace="http://www.example.org" elementFormDefault="qualified">
+	<xs:element name="Fout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="uuid" type="xs:string"/>
+				<xs:element name="If-None-Match" type="xs:string"/>
+				<xs:element name="Accept-Crs" type="xs:string"/>
+				<xs:element name="Content-Crs" type="xs:string"/>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ValidatieFout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="xs:string" minOccurs="0"/>
+				<xs:element name="code" type="xs:string" minOccurs="1"/>
+				<xs:element name="title" type="xs:string" minOccurs="1"/>
+				<xs:element name="status" type="xs:integer" minOccurs="1"/>
+				<xs:element name="detail" type="xs:string" minOccurs="1"/>
+				<xs:element name="instance" type="xs:string" minOccurs="1"/>
+				<xs:element name="FieldValidationError">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" minOccurs="1"/>
+							<xs:element name="code" type="xs:string" minOccurs="1"/>
+							<xs:element name="reason" type="xs:string" minOccurs="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Zaak">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="uuid" type="xs:string" minOccurs="1"/>
+				<xs:element name="identificatie">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="40"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="bronorganisatie">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="9"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="omschrijving">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="80"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="toelichting">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="zaaktype">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="registratiedatum" type="xs:string" minOccurs="0"/>
+				<xs:element name="verantwoordelijkeOrganisatie">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="9"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="startdatum" type="xs:string" minOccurs="1"/>
+				<xs:element name="einddatum" type="xs:string" minOccurs="1"/>
+				<xs:element name="einddatumGepland" type="xs:string" minOccurs="0"/>
+				<xs:element name="uiterlijkeEinddatumAfdoening" type="xs:string" minOccurs="0"/>
+				<xs:element name="publicatiedatum" type="xs:string" minOccurs="0"/>
+				<xs:element name="communicatiekanaal">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1000"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="productenOfDiensten">
+					<xs:simpleType>
+						<xs:restriction base="xs:array"/>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -59,12 +59,12 @@ public abstract class HelperClass {
 
 
     public static boolean isContain(String source, String reference) {
-        String[] parts = reference.split("/");
-        String subItem = parts[parts.length - 1];
+            String[] parts = reference.split("/");
+            String subItem = parts[parts.length - 1];
 
-        String pattern = "\\b"+subItem+"\\b";
-        Pattern p=Pattern.compile(pattern);
-        Matcher m=p.matcher(source);
-        return m.find();
+            String pattern = "\\b"+subItem+"\\b";
+            Pattern p=Pattern.compile(pattern);
+            Matcher m=p.matcher(source);
+            return m.find();
     }
 }

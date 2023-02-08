@@ -72,8 +72,24 @@ public class AdapterRefs {
         i = 0;
         for (String code : statusCodes) {
             // get the reference of the response
-            String ref = response.get(code).getContent().get("*/*").getSchema().get$ref();
+            if (response.get(code).getContent() == null) {
+                i++;
+                continue;
+            }
+
+            String ref = "";
+            try{
+                ref = response.get(code).getContent().get("*/*").getSchema().get$ref();
+            }
+            catch (NullPointerException e){
+                ref = response.get(code).getContent().get("application/json").getSchema().get$ref();
+            }
+
+            if (ref == null) {
+                ref = response.get(code).getContent().get("application/json").getSchema().getItems().get$ref();
+            }
             // add the reference to the array
+
             String[] parts = ref.split("/");
             String lastPart = parts[parts.length - 1];
 
