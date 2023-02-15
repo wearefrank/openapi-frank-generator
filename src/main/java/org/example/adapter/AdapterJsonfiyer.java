@@ -2,14 +2,8 @@ package org.example.adapter;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
-import org.example.adapter.AdapterClass;
-import org.example.adapter.ApiListenerClass;
-import org.example.adapter.ReceiverClass;
 import org.json.simple.JSONObject;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Map;
 
 public class AdapterJsonfiyer {
@@ -50,11 +44,11 @@ public class AdapterJsonfiyer {
         JSONObject adapterRefsJson = new JSONObject();
         adapterRefsJson.put("schema", adapterRefs.schemaLocation);
         adapterRefsJson.put("root", adapterRefs.root);
-        adapterRefsJson.put("responseRoot",adapterRefs.responseRoot);
+        adapterRefsJson.put("responseRoot", adapterRefs.responseRoot);
         adapterJson.put("adapterRefs", adapterRefsJson);
 
         // instantiate paramSingleton
-        String[] params = ParamSingleton.getInstance().getParams();
+        String[] params = adapterRefs.parameters.toArray(new String[0]);
         // add the params as a JSONObject
         adapterJson.put("parameters", params);
 

@@ -7,8 +7,8 @@ import org.xml.sax.SAXException;
 import java.math.BigDecimal;
 
 public class SimpleType extends Typing {
-    private String name;
-    private String type;
+    private final String name;
+    private final String type;
 
     @Setter
     private BigDecimal maxInclusive;
@@ -30,33 +30,33 @@ public class SimpleType extends Typing {
 
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
-        try(SaxElementBuilder subElement = builder.startElement("xs:element")){
+        try (SaxElementBuilder subElement = builder.startElement("xs:element")) {
             subElement.addAttribute("name", this.name);
-            try(SaxElementBuilder simpleType = subElement.startElement("xs:simpleType")){
-                try(SaxElementBuilder restriction = simpleType.startElement("xs:restriction")){
+            try (SaxElementBuilder simpleType = subElement.startElement("xs:simpleType")) {
+                try (SaxElementBuilder restriction = simpleType.startElement("xs:restriction")) {
                     restriction.addAttribute("base", "xs:" + this.type);
                     if (this.maxInclusive != null) {
-                        try(SaxElementBuilder maxInclusive = restriction.startElement("xs:maxInclusive")){
+                        try (SaxElementBuilder maxInclusive = restriction.startElement("xs:maxInclusive")) {
                             maxInclusive.addAttribute("value", String.valueOf(this.maxInclusive));
                         }
                     }
                     if (this.minInclusive != null) {
-                        try(SaxElementBuilder minInclusive = restriction.startElement("xs:minInclusive")){
+                        try (SaxElementBuilder minInclusive = restriction.startElement("xs:minInclusive")) {
                             minInclusive.addAttribute("value", String.valueOf(this.minInclusive));
                         }
                     }
                     if (this.minLength != null) {
-                        try(SaxElementBuilder minLength = restriction.startElement("xs:minLength")){
+                        try (SaxElementBuilder minLength = restriction.startElement("xs:minLength")) {
                             minLength.addAttribute("value", this.minLength);
                         }
                     }
                     if (this.maxLength != null) {
-                        try(SaxElementBuilder maxLength = restriction.startElement("xs:maxLength")){
+                        try (SaxElementBuilder maxLength = restriction.startElement("xs:maxLength")) {
                             maxLength.addAttribute("value", this.maxLength);
                         }
                     }
                     if (this.pattern != null) {
-                        try(SaxElementBuilder pattern = restriction.startElement("xs:pattern")){
+                        try (SaxElementBuilder pattern = restriction.startElement("xs:pattern")) {
                             pattern.addAttribute("value", this.pattern);
                         }
                     }

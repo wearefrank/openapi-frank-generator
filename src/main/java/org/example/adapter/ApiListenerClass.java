@@ -3,20 +3,17 @@ package org.example.adapter;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ApiListenerClass {
-    private String apiListenerName;
+    private final String apiListenerName;
     private Operation operation;
-    private String produces;
+    private final String produces;
     private String method;
-    private String uriPattern;
+    private final String uriPattern;
 
     public ApiListenerClass(Map.Entry<String, PathItem> path) {
         this.apiListenerName = path.getKey().substring(1);  // apiListenerName: remove the first slash
@@ -61,6 +58,7 @@ public class ApiListenerClass {
                 .map(Map.Entry::getKey)
                 .orElse("");
     }
+
     /**
      * Extracts the content type and converts it to the Frank content types.
      * We need to look for any pay load and check what kind of content type is used
@@ -88,6 +86,7 @@ public class ApiListenerClass {
 
         return mapContentType(content);
     }
+
     /**
      * map the content of oap to that of Frank
      *
@@ -114,6 +113,7 @@ public class ApiListenerClass {
         }
         return contentType;
     }
+
     /**
      * Get the operations of this adapter
      *

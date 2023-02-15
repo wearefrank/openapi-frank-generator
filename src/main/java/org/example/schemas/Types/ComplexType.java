@@ -6,8 +6,9 @@ import org.example.schemas.Sequence;
 import org.xml.sax.SAXException;
 
 public class ComplexType extends Typing {
-    private String name;
-    private Sequence sequence;
+    private final String name;
+    private final Sequence sequence;
+
     public ComplexType(String name) {
         super();
         this.name = name;
@@ -27,7 +28,7 @@ public class ComplexType extends Typing {
 
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
-        try(SaxElementBuilder subElement = builder.startElement("xs:complexType")) {
+        try (SaxElementBuilder subElement = builder.startElement("xs:complexType")) {
             if (this.name != "") {
                 subElement.addAttribute("name", this.name);
             }

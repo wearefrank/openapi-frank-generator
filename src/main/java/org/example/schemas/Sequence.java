@@ -7,8 +7,11 @@ import org.xml.sax.SAXException;
 import java.util.ArrayList;
 
 public class Sequence {
-    private ArrayList<Element> elements;
-    public Sequence() { this.elements = new ArrayList<>(); }
+    private final ArrayList<Element> elements;
+
+    public Sequence() {
+        this.elements = new ArrayList<>();
+    }
 
     // Add element to elements
     public void addElement(Element element) {
@@ -21,12 +24,13 @@ public class Sequence {
     }
 
     public void AddSequenceToBuilder(SaxElementBuilder builder) throws SAXException {
-        try(SaxElementBuilder subElement = builder.startElement("xs:sequence")) {
+        try (SaxElementBuilder subElement = builder.startElement("xs:sequence")) {
             for (Element element : this.elements) {
                 element.AddElementToBuilder(subElement);
             }
         }
     }
+
     public void SilentAddSequenceToBuilder(SaxElementBuilder builder) throws SAXException {
         for (Element element : this.elements) {
             element.AddElementToBuilder(builder);

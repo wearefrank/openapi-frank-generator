@@ -34,17 +34,16 @@ public class Element {
     public void setType(String type) {
         if (Objects.equals(type, "numberType")) {
             this.type = "xs:float";
-        }
-        else{
+        } else {
             this.type = type;
         }
     }
+
     public void setMinOccursCheck(List<String> required) {
         // Check if the property is required, if so the min occurs is set to 1
         if (required != null && required.contains(this.name)) {
             this.minOccurs = 1;
-        }
-        else {
+        } else {
             this.minOccurs = 0;
         }
     }
@@ -53,7 +52,7 @@ public class Element {
         if (this.object != null) {
             this.object.AddToBuilder(builder);
         } else {
-            try(SaxElementBuilder subElement = builder.startElement("xs:element")){
+            try (SaxElementBuilder subElement = builder.startElement("xs:element")) {
                 subElement.addAttribute("name", this.name);
                 subElement.addAttribute("type", "xs:" + this.type);
                 if (this.minOccurs != null) {

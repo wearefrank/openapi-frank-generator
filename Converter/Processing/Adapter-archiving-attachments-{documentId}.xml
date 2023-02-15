@@ -2,10 +2,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../FrankConfig.xsd"
 >
-    <Adapter name="{{name}}" description="{{description}}">
-        <Receiver name="{{receiver.name}}">
-            <ApiListener name="{{apiListener.name}}" method="{{apiListener.method}}"
-                         uriPattern="{{apiListener.uriPattern}}" produces="{{apiListener.produces}}"/>
+    <Adapter name="Adapter-archiving-attachments-{documentId}" description="OpenApi auto-generated at 2023-02-15 11:45:25 for Ibis4Titan (TST)">
+        <Receiver name="Receiver-archiving/attachments/{documentId}">
+            <ApiListener name="ApiListener-archiving/attachments/{documentId}" method="GET"
+                         uriPattern="/archiving/attachments/{documentId}" produces="ANY"/>
         </Receiver>
         <Pipeline>
             <Exits>
@@ -27,9 +27,11 @@
                     responseRoot="FindDocuments_Response,FindDocuments_Error"
                     deepSearch="true">
 
-                {{#each parameters}}
-                    <Param name="{{this}}" sessionKey="{{this}}"/>
-                {{/each}}
+                
+                    <Param name="documentId" sessionKey="documentId"/>
+                
+                    <Param name="idType" sessionKey="idType"/>
+                
 
                 <Forward name="success" path="Build_query"/>
                 <Forward name="parserError" path="NotWellFormed"/>

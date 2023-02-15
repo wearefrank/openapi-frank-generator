@@ -12,10 +12,10 @@ public class Main {
     public static void main(String[] args) throws IOException, SAXException, URISyntaxException {
 
         //// INITIALIZATION ////
-        // get source of current directory
+        // Get source of current directory
         String source = System.getProperty("user.dir") + "/Converter/Intake/openapi.json";
 
-        // Add cli option
+        // Add cli option (if given source is another file location)
         if (args.length > 0) {
             source = args[0];
         }
@@ -24,9 +24,8 @@ public class Main {
 
         // Read the openapi specification off of a file or url
         SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
+
         OpenAPI openAPI = result.getOpenAPI();
-
         XMLGenerator.execute(openAPI);
-
     }
 }

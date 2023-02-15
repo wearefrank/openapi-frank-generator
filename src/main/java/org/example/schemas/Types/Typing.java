@@ -15,11 +15,9 @@ public class Typing {
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
         if (this.complexType != null) {
             this.complexType.AddToBuilder(builder);
-        }
-        else if (this.simpleType != null) {
+        } else if (this.simpleType != null) {
             this.simpleType.AddToBuilder(builder);
-        }
-        else if (this.reference != null) {
+        } else if (this.reference != null) {
             this.reference.AddToBuilder(builder);
         }
     }

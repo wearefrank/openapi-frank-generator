@@ -5,8 +5,8 @@ import org.example.schemas.Sequence;
 import org.xml.sax.SAXException;
 
 public class Reference extends Typing {
-    private String name;
-    private Sequence sequence;
+    private final String name;
+    private final Sequence sequence;
 
     public Reference(String name) {
         this.name = name;
@@ -19,7 +19,7 @@ public class Reference extends Typing {
 
     @Override
     public void AddToBuilder(SaxElementBuilder builder) throws SAXException {
-        try(SaxElementBuilder subElement = builder.startElement("xs:element")){
+        try (SaxElementBuilder subElement = builder.startElement("xs:element")) {
             subElement.addAttribute("name", this.name);
             this.sequence.SilentAddSequenceToBuilder(subElement);
         }

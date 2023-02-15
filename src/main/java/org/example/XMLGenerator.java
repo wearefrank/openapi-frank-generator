@@ -42,9 +42,6 @@ public class XMLGenerator {
             AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, path, adapterRefs);
             String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
-            // Print the template
-            //System.out.println(adapterTemplate);
-
             // Export the template to xml file
             File xmlFile = new File(System.getProperty("user.dir") + "/Converter/Processing/" + adapter.getAdapterName() + ".xml");
             // Write string to file

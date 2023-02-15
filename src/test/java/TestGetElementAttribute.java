@@ -4,11 +4,9 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.example.schemas.Element;
 import org.example.schemas.HelperClass;
-import org.example.schemas.Sequence;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -26,11 +24,11 @@ public class TestGetElementAttribute {
 
     //// TESTS ////
     @Test
-    public void test1 (){
+    public void test1() {
         // Mock the schema
-        Schema schema = mock (Schema.class);
-        when (schema.getMinItems()).thenReturn(4);
-        when (schema.getMaxItems()).thenReturn(8);
+        Schema schema = mock(Schema.class);
+        when(schema.getMinItems()).thenReturn(4);
+        when(schema.getMaxItems()).thenReturn(8);
 
         Element element = new Element("testElement");
 
@@ -39,12 +37,13 @@ public class TestGetElementAttribute {
         assertTrue(element.getMinOccurs() == 4 && element.getMaxOccurs() == 8);
 
     }
+
     @Test
-    public void test2 (){
+    public void test2() {
         // Mock the schema
-        Schema schema = mock (Schema.class);
-        when (schema.getMinItems()).thenReturn(null);
-        when (schema.getMaxItems()).thenReturn(8);
+        Schema schema = mock(Schema.class);
+        when(schema.getMinItems()).thenReturn(null);
+        when(schema.getMaxItems()).thenReturn(8);
 
         Element element = new Element("testElement");
 
@@ -52,12 +51,13 @@ public class TestGetElementAttribute {
 
         assertTrue(element.getMinOccurs() == 0 && element.getMaxOccurs() == 8);
     }
+
     @Test
-    public void test3 (){
+    public void test3() {
         // Mock the schema
-        Schema schema = mock (Schema.class);
-        when (schema.getMinItems()).thenReturn(null);
-        when (schema.getMaxItems()).thenReturn(5);
+        Schema schema = mock(Schema.class);
+        when(schema.getMinItems()).thenReturn(null);
+        when(schema.getMaxItems()).thenReturn(5);
 
         Element element = new Element("testElement");
 

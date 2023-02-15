@@ -2,12 +2,11 @@ package org.example;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import nl.nn.adapterframework.xml.PrettyPrintFilter;
 import nl.nn.adapterframework.xml.SaxDocumentBuilder;
 import nl.nn.adapterframework.xml.XmlWriter;
-import org.example.adapter.ParamSingleton;
-import org.example.schemas.*;
+import org.example.schemas.Element;
+import org.example.schemas.HelperClass;
 import org.example.schemas.Types.ComplexType;
 import org.example.schemas.Types.Reference;
 import org.example.schemas.Types.SimpleType;
@@ -17,11 +16,8 @@ import org.xml.sax.SAXException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class XSDGenerator {
 
@@ -31,12 +27,9 @@ public class XSDGenerator {
     String upperSchemaName;
 
     // Used to store outside parameters given from the xml
-    List<Parameter> parameters;
 
-    public void execute(String schemaLocation, OpenAPI openAPI, ArrayList<String> refs, List<Parameter> parameters) throws SAXException, FileNotFoundException {
+    public void execute(String schemaLocation, OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
-        this.parameters = parameters;
-        ParamSingleton.getInstance().resetParams();
 
         //// Set up the XML writer
         // TODO: Ask if xsd is an xml file {xsd.xml}
@@ -48,10 +41,10 @@ public class XSDGenerator {
 
         //// Set up the XML builder
         SaxDocumentBuilder builder = new SaxDocumentBuilder("xs:schema", contentHandler);
-        builder.addAttribute("xmlns:xs","http://www.w3.org/2001/XMLSchema");
-        builder.addAttribute("xmlns:tns","http://www.example.org");
-        builder.addAttribute("targetNamespace","http://www.example.org");
-        builder.addAttribute("elementFormDefault","qualified");
+        builder.addAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
+        builder.addAttribute("xmlns:tns", "http://www.example.org");
+        builder.addAttribute("targetNamespace", "http://www.example.org");
+        builder.addAttribute("elementFormDefault", "qualified");
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
             //TODO: use this for check:   boolean isRef = refs.contains(entry.getKey());
             if (refs.contains(entry.getKey())) {
@@ -67,14 +60,14 @@ public class XSDGenerator {
     /**
      * Prints the XSD elements for a given schema
      *
-     * @param key - The name of the schema
+     * @param key   - The name of the schema
      * @param entry - the schema
      * @return nothing
      */
-    public Typing createXSDEntry(String key,Schema entry) {
+    public Typing createXSDEntry(String key, Schema entry) {
         try {
             // Create required variable
-            List<String> required = Arrays.asList("null");
+            List<String> required = List.of("null");
 
             // Check the required properties
             try {
@@ -92,9 +85,9 @@ public class XSDGenerator {
                     return simpleType;
                 }
                 //// REFERENCE ////
-                else if (entry.getItems().get$ref() != null  ) {
+                else if (entry.getItems().get$ref() != null) {
                     // TODO: REFERENCES SHOULD NOT GET INSERTED RIGHT???
-                    for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()){
+                    for (Map.Entry<String, Schema> innerEntry : openAPI.getComponents().getSchemas().entrySet()) {
                         if (HelperClass.isContain(innerEntry.getKey(), entry.getItems().get$ref())) {
                             Reference reference = new Reference(key);
 
@@ -112,7 +105,7 @@ public class XSDGenerator {
                 Map<String, Schema> props = entry.getProperties();
 
                 // Check if it is the root element [thus needing reference status]
-                if (key == this.upperSchemaName){
+                if (key == this.upperSchemaName) {
                     Reference reference = new Reference(key);
                     ComplexType complexType = new ComplexType("");
                     reference.addTyping(recursiveXSD(props, complexType, required));
@@ -135,26 +128,15 @@ public class XSDGenerator {
             // Check if outer parameters are given
             // TODO: Currently just given to first complexType, could pose problem when not sorted correctly
 
-            if (this.parameters != null) {
-                for (Parameter parameter : this.parameters) {
-                    Element element = new Element(parameter.getName());
-                    element.setType(parameter.getSchema().getType());
-                    complexType.addElement(element);
-
-                    // Add parameter to ParamSingleton
-                    ParamSingleton.getInstance().addParam(parameter.getName());
-                }
-                this.parameters = null;
-            }
             String name = e.getKey();
             // Check if the property has the word Type in it
             try {
                 if (getType(e).contains("Type") && !getType(e).equals("numberType")) {
                     // Check if it is OAS mishap
-                    if(e.getValue().get$ref() != null){
+                    if (e.getValue().get$ref() != null) {
                         //// REFERENCE ////
                         //complexType.addTyping(new Reference(name, e.getValue().get$ref()));
-                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
+                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
                             if (HelperClass.isContain(entry.getKey(), e.getValue().get$ref())) {
                                 Reference reference = new Reference(name);
                                 reference.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
@@ -162,8 +144,7 @@ public class XSDGenerator {
                             }
                         }
                         // TODO: fix that isContain also implemented here!!!
-                    }
-                    else if (e.getValue().getItems() == null) {
+                    } else if (e.getValue().getItems() == null) {
                         //// OAS MISHAP ////
                         // TODO: This should be an error from the openapispecification
                         //complexType = RecursiveXSD(e.getValue().getProperties(), complexType, e.getValue().getRequired());
@@ -173,58 +154,39 @@ public class XSDGenerator {
                     else if (e.getValue().getItems().get$ref() != null) {
                         //// REFERENCE ////
                         //complexType.addTyping(new Reference(name, e.getValue().getItems().get$ref()));
-                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()){
+                        for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
                             if (HelperClass.isContain(entry.getKey(), e.getValue().getItems().get$ref())) {
                                 complexType.addTyping(createXSDEntry(entry.getKey(), entry.getValue()));
                             }
                         }
                         // TODO: fix that isContain also implemented here!!!
-                    }
-
-                    else if (e.getValue().getItems().getProperties() == null) {
+                    } else if (e.getValue().getItems().getProperties() == null) {
                         //// RECURSION, ARRAY ITEMS ////
                         SimpleType simple = new SimpleType(name, e.getValue().getType());
                         simple = HelperClass.getSimpleTypeAttributes(e, simple);
                         complexType.addTyping(simple);
-
-                        // Add simpletype to ParamSingleton
-                        ParamSingleton.getInstance().addParam(name);
-                    }
-                    else {
+                    } else {
                         //// RECURSION, NORMAL ////
                         complexType.addTyping(createXSDEntry(name, e.getValue().getItems()));
                     }
-                }
-                else if (e.getValue().getItems() != null && e.getValue().getItems().getProperties() == null)  {
+                } else if (e.getValue().getItems() != null && e.getValue().getItems().getProperties() == null) {
                     //// RECURSION, ARRAY ITEMS ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = HelperClass.getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
-
-                    // Add simpletype to ParamSingleton
-                    ParamSingleton.getInstance().addParam(name);
-                }
-                else if (HelperClass.checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
+                } else if (HelperClass.checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
                     //// SIMPLETYPE ////
                     SimpleType simple = new SimpleType(name, e.getValue().getType());
                     simple = HelperClass.getSimpleTypeAttributes(e, simple);
                     complexType.addTyping(simple);
-
-                    // Add simpletype to ParamSingleton
-                    ParamSingleton.getInstance().addParam(name);
-                }
-                else {
+                } else {
                     //// ELEMENT ////
                     Element element = new Element(name);
                     element.setType(getType(e));
                     element = HelperClass.getElementAttributes(e.getValue(), element, required);
                     complexType.addElement(element);
-
-                    // add element to ParamSingleton
-                    ParamSingleton.getInstance().addParam(name);
                 }
-            }
-            catch (NullPointerException ex) {
+            } catch (NullPointerException ex) {
                 System.out.println("[ERROR {RecursiveXSD}] - " + ex.getMessage());
             }
         }
