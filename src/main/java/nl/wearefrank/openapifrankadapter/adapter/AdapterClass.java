@@ -9,9 +9,9 @@ public class AdapterClass {
     private final String adapterName;
     private final String adapterDescription;
 
-    public AdapterClass(OpenAPI openAPI, Map.Entry<String, PathItem> path) {
+    public AdapterClass(OpenAPI openAPI, Map.Entry<String, PathItem> path, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) {
         // adapterName: remove the first slash and replace the remaining slashes with -
-        this.adapterName = path.getKey().substring(1).replace("/", "-");
+        this.adapterName = path.getKey().substring(1).replace("/", "-") + "-" + operation.getKey();
         this.adapterDescription = openAPI.getInfo().getDescription();
 
     }

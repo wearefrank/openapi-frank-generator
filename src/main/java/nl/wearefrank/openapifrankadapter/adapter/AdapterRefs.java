@@ -29,27 +29,15 @@ public class AdapterRefs {
         schemaLocation = folderPath + "/" + adapterName + ".xsd";
 
         // TODO: if more api types added, add them here
-        if (path.getValue().getGet() != null) {
-            fillRefs(path.getValue().getGet().getResponses());
+        fillRefs(operation.getValue().getResponses());
 
-            // List of parameters
-            List<Parameter> getParams = path.getValue().getGet().getParameters();
+        // List of parameters
+        if (operation.getValue().getParameters() != null) {
+            List<Parameter> getParams = operation.getValue().getParameters();
             for (Parameter parameter : getParams) {
                 if (!parameters.contains(parameter.getName()))
                     parameters.add(parameter.getName());
             }
-        }
-        if (path.getValue().getPost() != null) {
-            fillRefs(path.getValue().getPost().getResponses());
-        }
-        if (path.getValue().getPut() != null) {
-            fillRefs(path.getValue().getPut().getResponses());
-        }
-        if (path.getValue().getDelete() != null) {
-            fillRefs(path.getValue().getDelete().getResponses());
-        }
-        if (path.getValue().getPatch() != null) {
-            fillRefs(path.getValue().getPatch().getResponses());
         }
 
         XSDGenerator xsdGenerator = new XSDGenerator();

@@ -8,13 +8,14 @@ import java.util.Map;
 
 public class AdapterJsonfiyer {
     Map.Entry<String, PathItem> path;
+    Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation;
     OpenAPI openAPI;
-    String fileName;
     AdapterRefs adapterRefs;
 
-    public AdapterJsonfiyer(OpenAPI openAPI, AdapterRefs adapterRefs) {
+    public AdapterJsonfiyer(OpenAPI openAPI, AdapterRefs adapterRefs, Map.Entry<String, PathItem> path, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) {
         this.openAPI = openAPI;
-        this.fileName = path.getKey().substring(1).replace("/", "-") + "_Configuration.json";
+        this.path = path;
+        this.operation = operation;
         this.adapterRefs = adapterRefs;
     }
 
@@ -23,9 +24,9 @@ public class AdapterJsonfiyer {
         // First make the new JSONObject
         JSONObject adapterJson = new JSONObject();
         // Add the name
-        adapterJson.put("name", new AdapterClass(this.openAPI, this.path).getAdapterName());
+        adapterJson.put("name", new AdapterClass(this.openAPI, this.path, this.operation).getAdapterName());
         // Add the description
-        adapterJson.put("description", new AdapterClass(this.openAPI, this.path).getAdapterDescription());
+        adapterJson.put("description", new AdapterClass(this.openAPI, this.path, this.operation).getAdapterDescription());
         // Add the type
         adapterJson.put("type", "adapter");
         // Add the receiver

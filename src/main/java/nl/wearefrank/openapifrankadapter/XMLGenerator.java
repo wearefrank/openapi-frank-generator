@@ -25,7 +25,8 @@ public class XMLGenerator {
             for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation : path.getValue().readOperationsMap().entrySet()) {
 
                 // Create a new AdapterClass
-                AdapterClass adapter = new AdapterClass(openAPI, path);
+                System.out.println("Generating adapter for " + path.getKey() + " " + operation.getKey());
+                AdapterClass adapter = new AdapterClass(openAPI, path, operation);
 
                 //// Generate XSD ////
                 // Generate XSD for the adapter
@@ -42,7 +43,7 @@ public class XMLGenerator {
                 Template template = handlebars.compileInline(templateString);
 
                 // Create JSON and apply the template
-                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, adapterRefs);
+                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, adapterRefs, path, operation);
                 String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
                 // Export the template to xml file
