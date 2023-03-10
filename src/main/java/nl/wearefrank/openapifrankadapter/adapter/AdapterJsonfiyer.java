@@ -12,8 +12,7 @@ public class AdapterJsonfiyer {
     String fileName;
     AdapterRefs adapterRefs;
 
-    public AdapterJsonfiyer(OpenAPI openAPI, Map.Entry<String, PathItem> path, AdapterRefs adapterRefs) {
-        this.path = path;
+    public AdapterJsonfiyer(OpenAPI openAPI, AdapterRefs adapterRefs) {
         this.openAPI = openAPI;
         this.fileName = path.getKey().substring(1).replace("/", "-") + "_Configuration.json";
         this.adapterRefs = adapterRefs;

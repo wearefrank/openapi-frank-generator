@@ -21,33 +21,36 @@ public class XMLGenerator {
 
         // For loop going through all the paths and instantiating a new AdapterClass
         for (Map.Entry<String, PathItem> path : paths.entrySet()) {
-            // Create a new AdapterClass
-            AdapterClass adapter = new AdapterClass(openAPI, path);
+            // For loop going one level deeper in the path
+            for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation : path.getValue().readOperationsMap().entrySet()) {
 
-            //// Generate XSD ////
-            // Generate XSD for the adapter
-            AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), folderPath, openAPI, path);
+                // Create a new AdapterClass
+                AdapterClass adapter = new AdapterClass(openAPI, path);
 
-            //// Template ////
-            // Get the template file
+                //// Generate XSD ////
+                // Generate XSD for the adapter
+                AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), folderPath, openAPI, operation);
 
-            File templateFile = new File(XMLGenerator.class.getResource("/template.hbs").toURI());
-            String templateString = new String(java.nio.file.Files.readAllBytes(templateFile.toPath()));
+                //// Template ////
+                // Get the template file
 
-            // Create a new Handlebars object
-            Handlebars handlebars = new Handlebars();
-            Template template = handlebars.compileInline(templateString);
+                File templateFile = new File(XMLGenerator.class.getResource("/template.hbs").toURI());
+                String templateString = new String(java.nio.file.Files.readAllBytes(templateFile.toPath()));
 
-            // Create JSON and apply the template
-            AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, path, adapterRefs);
-            String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
+                // Create a new Handlebars object
+                Handlebars handlebars = new Handlebars();
+                Template template = handlebars.compileInline(templateString);
 
-            // Export the template to xml file
-            File xmlFile = new File(folderPath + "/" + adapter.getAdapterName() + ".xml");
-            // Write string to file
-            java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
+                // Create JSON and apply the template
+                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, adapterRefs);
+                String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
+                // Export the template to xml file
+                File xmlFile = new File(folderPath + "/" + adapter.getAdapterName() + ".xml");
+                // Write string to file
+                java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
 
+            }
         }
     }
 }

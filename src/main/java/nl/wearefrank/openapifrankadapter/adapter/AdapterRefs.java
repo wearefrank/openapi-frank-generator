@@ -23,7 +23,7 @@ public class AdapterRefs {
     String responseRoot;
     List<String> parameters = new ArrayList<>();
 
-    public AdapterRefs(String adapterName, String folderPath, OpenAPI openAPI, Map.Entry<String, PathItem> path) throws FileNotFoundException, SAXException {
+    public AdapterRefs(String adapterName, String folderPath, OpenAPI openAPI, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) throws FileNotFoundException, SAXException {
         this.refs = new ArrayList<>();
 
         schemaLocation = folderPath + "/" + adapterName + ".xsd";
