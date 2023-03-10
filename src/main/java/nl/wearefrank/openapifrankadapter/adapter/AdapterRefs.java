@@ -3,6 +3,7 @@ package nl.wearefrank.openapifrankadapter.adapter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -76,31 +77,31 @@ public class AdapterRefs {
             i++;
         }
 
-        i = 0;
         for (String code : statusCodes) {
             // get the reference of the response
             if (response.get(code).getContent() == null) {
-                i++;
                 continue;
             }
 
-            String ref = "";
-            try {
-                ref = response.get(code).getContent().get("*/*").getSchema().get$ref();
-            } catch (NullPointerException e) {
-                ref = response.get(code).getContent().get("application/json").getSchema().get$ref();
+            for (Map.Entry<String, MediaType> entry : response.get(code).getContent().entrySet()) {
+                //System.out.println(entry.getKey());
+                String ref = entry.getValue().getSchema().get$ref();
+
+                if (ref == null) {
+                    if (entry.getValue().getSchema().getType().equals("array")) {
+                        ref = entry.getValue().getSchema().getItems().get$ref();
+                    }
+                    else {
+                        System.out.println("No ref found " + entry);
+                        continue;
+                    }
+                }
+
+                String[] parts = ref.split("/");
+                String lastPart = parts[parts.length - 1];
+
+                this.refs.add(lastPart);
             }
-
-            if (ref == null) {
-                ref = response.get(code).getContent().get("application/json").getSchema().getItems().get$ref();
-            }
-            // add the reference to the array
-
-            String[] parts = ref.split("/");
-            String lastPart = parts[parts.length - 1];
-
-            this.refs.add(lastPart);
-            i++;
         }
     }
 
