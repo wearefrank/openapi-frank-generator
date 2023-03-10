@@ -6,30 +6,40 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 // Disable security
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 @RestController
 public class OpenapiFrankadapterApplication {
 
-    public static void main(String[] args) throws IOException, URISyntaxException, SAXException {
+    public static void main(String[] args) {
 
         SpringApplication.run(OpenapiFrankadapterApplication.class, args);
 
+        // TODO: Clean the processing folder on startup
+
+    }
+
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, URISyntaxException, SAXException {
 
         //// INITIALIZATION ////
 
@@ -40,45 +50,75 @@ public class OpenapiFrankadapterApplication {
         File folder = new File(folderPath);
         folder.mkdir();
 
-        // TODO : This should be gotten from the API incoming request
-        String source = System.getProperty("user.dir") + "/src/test/java/nl/wearefrank/openapifrankadapter/TestingOASFile/openapi.json";
+        // Save the file to the resources folder
+        String fileName = file.getOriginalFilename(); // TODO: Check if this name shouldnt just be openapi.json
+        Path filePath = Paths.get("src/main/resources/processing/" + uuid, fileName);
+        file.transferTo(filePath);
 
-        // Read the openapi specification off of a file or url
+        // TODO : Check if this part can be simplified with file.getContent()
+
+        String source = System.getProperty("user.dir") + "/src/main/resources/processing/" + uuid + "/" + fileName;
+        System.out.println(source);
+
+        // Read the openapi specification
         SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
 
         OpenAPI openAPI = result.getOpenAPI();
         XMLGenerator.execute(openAPI, folderPath);
 
-        //// Zip all the files inside the folder
-        // create a ZipOutputStream to write the zip file
-        String zipFilePath = folderPath + ".zip";
-        FileOutputStream fos = new FileOutputStream(zipFilePath);
+        // Create a zip file with the saved file
+        String zipFileName = fileName.substring(0, fileName.lastIndexOf(".")) + ".zip";
+        Path zipFilePath = Paths.get("src/main/resources/processing/" + uuid, zipFileName);
+        createZipFile(Paths.get("src/main/resources/processing/" + uuid), zipFilePath.toFile());
+
+        // Return the zip file as a resource
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
+
+        FileInputStream resource = new FileInputStream(zipFilePath.toFile());
+        FilterInputStream filterInputStream = new FilterInputStream(resource) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                // Delete all files in the folder
+                File[] files = folder.listFiles();
+                for (File file : files) {
+                    file.delete();
+                }
+                // Delete the folder
+                folder.delete();
+            }
+        };
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(new InputStreamResource(filterInputStream));
+    }
+    
+    private void createZipFile(Path folderPath, File zipFile) throws IOException {
+        FileOutputStream fos = new FileOutputStream(zipFile);
         ZipOutputStream zipOut = new ZipOutputStream(fos);
 
-        // get a list of all the files in the directory
-        File[] files = folder.listFiles();
+        File[] files = folderPath.toFile().listFiles();
 
-        // compress each file into the zip file
         for (File file : files) {
+            if (file.getName().equals(zipFile.getName())) {
+                continue;
+            }
+
             FileInputStream fis = new FileInputStream(file);
             ZipEntry zipEntry = new ZipEntry(file.getName());
             zipOut.putNextEntry(zipEntry);
 
             byte[] bytes = new byte[1024];
             int length;
-            while ((length = fis.read(bytes)) >= 0) {
+            while((length = fis.read(bytes)) >= 0) {
                 zipOut.write(bytes, 0, length);
             }
-
             fis.close();
         }
-        // close the ZipOutputStream
         zipOut.close();
         fos.close();
-    }
-
-    @GetMapping("/hello")
-    public String sayHello(@RequestParam(value = "myName", defaultValue = "World") String name) {
-        return String.format("Hello %s!", name);
     }
 }

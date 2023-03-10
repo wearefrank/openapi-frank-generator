@@ -11,8 +11,11 @@
     <groupId>nl.wearefrank</groupId>
     <artifactId>Openapi-frankadapter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+
     <name>Openapi-frankadapter</name>
     <description>Openapi-frankadapter</description>
+
     <properties>
         <java.version>17</java.version>
     </properties>
