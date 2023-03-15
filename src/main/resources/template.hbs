@@ -22,7 +22,7 @@
             <FixedResultPipeline name="Helloworld" result="Hello World!"/>
 
             <Json2XmlInputValidator
-                    schema="FindDocuments_GET_4/xsd/Archiving_Document_4_FindDocuments_1_GET.xsd"
+                    schema="{{adapterRefs.schema}}"
                     root="{{adapterRefs.root}}"
                     responseRoot="{{adapterRefs.responseRoot}}"
                     deepSearch="true">

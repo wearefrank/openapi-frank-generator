@@ -47,7 +47,7 @@ public class XMLGenerator {
                 Template template = handlebars.compileInline(templateString);
 
                 // Create JSON and apply the template
-                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(openAPI, adapterRefs, path, operation);
+                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(adapter, adapterRefs, path);
                 String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
                 // Export the template to xml file

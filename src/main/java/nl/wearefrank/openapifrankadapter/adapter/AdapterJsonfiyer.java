@@ -7,16 +7,14 @@ import org.json.simple.JSONObject;
 import java.util.Map;
 
 public class AdapterJsonfiyer {
-    Map.Entry<String, PathItem> path;
-    Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation;
-    OpenAPI openAPI;
+    AdapterClass adapter;
     AdapterRefs adapterRefs;
+    Map.Entry<String, PathItem> path;
 
-    public AdapterJsonfiyer(OpenAPI openAPI, AdapterRefs adapterRefs, Map.Entry<String, PathItem> path, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) {
-        this.openAPI = openAPI;
-        this.path = path;
-        this.operation = operation;
+    public AdapterJsonfiyer(AdapterClass adapter, AdapterRefs adapterRefs, Map.Entry<String, PathItem> path) {
+        this.adapter = adapter;
         this.adapterRefs = adapterRefs;
+        this.path = path;
     }
 
     // Convert string to JSON
@@ -24,9 +22,9 @@ public class AdapterJsonfiyer {
         // First make the new JSONObject
         JSONObject adapterJson = new JSONObject();
         // Add the name
-        adapterJson.put("name", new AdapterClass(this.openAPI, this.path, this.operation).getAdapterName());
+        adapterJson.put("name", this.adapter.getAdapterName());
         // Add the description
-        adapterJson.put("description", new AdapterClass(this.openAPI, this.path, this.operation).getAdapterDescription());
+        adapterJson.put("description", this.adapter.getAdapterDescription());
         // Add the type
         adapterJson.put("type", "adapter");
         // Add the receiver
@@ -42,7 +40,7 @@ public class AdapterJsonfiyer {
         adapterJson.put("apiListener", apiListenerJson);
         // Add the adapterRefs
         JSONObject adapterRefsJson = new JSONObject();
-        // TODO : Check if this is required |   adapterRefsJson.put("schema", adapterRefs.schemaLocation);
+        adapterRefsJson.put("schema",  this.adapter.getAdapterName() + ".xsd");
         adapterRefsJson.put("root", this.adapterRefs.root);
         adapterRefsJson.put("responseRoot", this.adapterRefs.responseRoot);
         adapterJson.put("adapterRefs", adapterRefsJson);
