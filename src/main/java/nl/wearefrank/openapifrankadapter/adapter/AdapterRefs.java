@@ -1,6 +1,5 @@
 package nl.wearefrank.openapifrankadapter.adapter;
 
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -11,24 +10,21 @@ import nl.wearefrank.openapifrankadapter.XSDGenerator;
 import org.xml.sax.SAXException;
 
 import java.io.FileNotFoundException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class AdapterRefs {
     private final ArrayList<String> refs;
-
-    String schemaLocation;
-    String root;
-    String responseRoot;
+    public Writer xsd;
+    public String root;
+    public String responseRoot;
     List<String> parameters = new ArrayList<>();
 
-    public AdapterRefs(String adapterName, String folderPath, OpenAPI openAPI, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) throws FileNotFoundException, SAXException {
+    public AdapterRefs(OpenAPI openAPI, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) throws FileNotFoundException, SAXException {
+        // List of references
         this.refs = new ArrayList<>();
-
-        schemaLocation = folderPath + "/" + adapterName + ".xsd";
-
-        // TODO: if more api types added, add them here
         fillRefs(operation.getValue().getResponses());
 
         // List of parameters
@@ -41,16 +37,17 @@ public class AdapterRefs {
         }
 
         XSDGenerator xsdGenerator = new XSDGenerator();
-        xsdGenerator.execute(schemaLocation, openAPI, uniqueRefs());
+        this.xsd = xsdGenerator.execute(openAPI, uniqueRefs());
 
         root = uniqueRefs().get(0);
+        responseRoot = "";
 
         for (int i = 1; i < uniqueRefs().size(); i++) {
             // if the last value, add a closing tag
             if (i == uniqueRefs().size() - 1) {
                 responseRoot += uniqueRefs().get(i);
             } else {
-                responseRoot += uniqueRefs().get(i) + ",";
+                responseRoot += uniqueRefs().get(i) + ", ";
             }
         }
     }

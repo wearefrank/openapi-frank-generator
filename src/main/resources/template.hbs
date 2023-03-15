@@ -23,8 +23,8 @@
 
             <Json2XmlInputValidator
                     schema="FindDocuments_GET_4/xsd/Archiving_Document_4_FindDocuments_1_GET.xsd"
-                    root="FindDocuments_Request"
-                    responseRoot="FindDocuments_Response,FindDocuments_Error"
+                    root="{{adapterRefs.root}}"
+                    responseRoot="{{adapterRefs.responseRoot}}"
                     deepSearch="true">
 
                 {{#each parameters}}

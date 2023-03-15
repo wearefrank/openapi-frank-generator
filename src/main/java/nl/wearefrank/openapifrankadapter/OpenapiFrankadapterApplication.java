@@ -19,11 +19,10 @@ import org.xml.sax.SAXException;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 // Disable security
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
@@ -42,83 +41,44 @@ public class OpenapiFrankadapterApplication {
     public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, URISyntaxException, SAXException {
 
         //// INITIALIZATION ////
-
         // Generate random folder for which to process the API request
         String uuid = UUID.randomUUID().toString() + LocalDateTime.now();
         uuid = uuid.replaceAll("[^a-zA-Z0-9]", "");
-        String folderPath = System.getProperty("user.dir") + "/src/main/resources/processing/" + uuid;
-        File folder = new File(folderPath);
-        folder.mkdir();
 
-        // Save the file to the resources folder
-        String fileName = file.getOriginalFilename(); // TODO: Check if this name shouldnt just be openapi.json
-        Path filePath = Paths.get("src/main/resources/processing/" + uuid, fileName);
-        file.transferTo(filePath);
-
-        // TODO : Check if this part can be simplified with file.getContent()
-
-        String source = System.getProperty("user.dir") + "/src/main/resources/processing/" + uuid + "/" + fileName;
-        System.out.println(source);
+        // Convert the incoming JSON multipart file to String
+        String json = new String(file.getBytes());
 
         // Read the openapi specification
-        SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
+        SwaggerParseResult result = new OpenAPIParser().readContents(json, null, null);
 
         OpenAPI openAPI = result.getOpenAPI();
-        XMLGenerator.execute(openAPI, folderPath);
+        LinkedList<GenFiles> genFiles = XMLGenerator.execute(openAPI);
 
-        // Create a zip file with the saved file
-        String zipFileName = fileName.substring(0, fileName.lastIndexOf(".")) + ".zip";
-        Path zipFilePath = Paths.get("src/main/resources/processing/" + uuid, zipFileName);
-        createZipFile(Paths.get("src/main/resources/processing/" + uuid), zipFilePath.toFile());
+        byte[] response = convertToZip(genFiles);
 
         // Return the zip file as a resource
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
-
-        FileInputStream resource = new FileInputStream(zipFilePath.toFile());
-        FilterInputStream filterInputStream = new FilterInputStream(resource) {
-            @Override
-            public void close() throws IOException {
-                super.close();
-                // Delete all files in the folder
-                File[] files = folder.listFiles();
-                for (File file : files) {
-                    file.delete();
-                }
-                // Delete the folder
-                folder.delete();
-            }
-        };
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + uuid + ".zip\"");
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new InputStreamResource(filterInputStream));
+                .body(new InputStreamResource(new ByteArrayInputStream(response)));
     }
-    
-    private void createZipFile(Path folderPath, File zipFile) throws IOException {
-        FileOutputStream fos = new FileOutputStream(zipFile);
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
 
-        File[] files = folderPath.toFile().listFiles();
+    public static byte[] convertToZip(LinkedList<GenFiles> files) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
-        for (File file : files) {
-            if (file.getName().equals(zipFile.getName())) {
-                continue;
-            }
-
-            FileInputStream fis = new FileInputStream(file);
-            ZipEntry zipEntry = new ZipEntry(file.getName());
-            zipOut.putNextEntry(zipEntry);
-
-            byte[] bytes = new byte[1024];
-            int length;
-            while((length = fis.read(bytes)) >= 0) {
-                zipOut.write(bytes, 0, length);
-            }
-            fis.close();
+        for (GenFiles file : files) {
+            ZipEntry entry = new ZipEntry(file.getName());
+            zipOutputStream.putNextEntry(entry);
+            zipOutputStream.write(file.getContent());
+            zipOutputStream.closeEntry();
         }
-        zipOut.close();
-        fos.close();
+
+        zipOutputStream.close();
+        byteArrayOutputStream.close();
+        return byteArrayOutputStream.toByteArray();
     }
 }

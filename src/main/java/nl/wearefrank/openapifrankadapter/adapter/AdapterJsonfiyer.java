@@ -42,12 +42,12 @@ public class AdapterJsonfiyer {
         adapterJson.put("apiListener", apiListenerJson);
         // Add the adapterRefs
         JSONObject adapterRefsJson = new JSONObject();
-        adapterRefsJson.put("schema", adapterRefs.schemaLocation);
-        adapterRefsJson.put("root", adapterRefs.root);
-        adapterRefsJson.put("responseRoot", adapterRefs.responseRoot);
+        // TODO : Check if this is required |   adapterRefsJson.put("schema", adapterRefs.schemaLocation);
+        adapterRefsJson.put("root", this.adapterRefs.root);
+        adapterRefsJson.put("responseRoot", this.adapterRefs.responseRoot);
         adapterJson.put("adapterRefs", adapterRefsJson);
 
-        // instantiate paramSingleton
+        // instantiate params as a String array
         String[] params = adapterRefs.parameters.toArray(new String[0]);
         // add the params as a JSONObject
         adapterJson.put("parameters", params);

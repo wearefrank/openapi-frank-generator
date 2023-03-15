@@ -12,12 +12,16 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public void execute(OpenAPI openAPI, String folderPath) throws IOException, SAXException, URISyntaxException {
+    static public LinkedList<GenFiles> execute(OpenAPI openAPI) throws IOException, SAXException, URISyntaxException {
         Paths paths = openAPI.getPaths();
+
+        LinkedList<GenFiles> genFiles = new LinkedList<>();
 
         // For loop going through all the paths and instantiating a new AdapterClass
         for (Map.Entry<String, PathItem> path : paths.entrySet()) {
@@ -29,12 +33,12 @@ public class XMLGenerator {
                 AdapterClass adapter = new AdapterClass(openAPI, path, operation);
 
                 //// Generate XSD ////
-                // Generate XSD for the adapter
-                AdapterRefs adapterRefs = new AdapterRefs(adapter.getAdapterName(), folderPath, openAPI, operation);
+                // Generate XSD for the adapter, add it to GenFiles (name + xsd, content as byte[])
+                AdapterRefs adapterRefs = new AdapterRefs(openAPI, operation);
+                genFiles.add(new GenFiles(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
 
                 //// Template ////
                 // Get the template file
-
                 File templateFile = new File(XMLGenerator.class.getResource("/template.hbs").toURI());
                 String templateString = new String(java.nio.file.Files.readAllBytes(templateFile.toPath()));
 
@@ -47,11 +51,11 @@ public class XMLGenerator {
                 String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
                 // Export the template to xml file
-                File xmlFile = new File(folderPath + "/" + adapter.getAdapterName() + ".xml");
-                // Write string to file
-                java.nio.file.Files.write(xmlFile.toPath(), adapterTemplate.getBytes());
-
+                genFiles.add(new GenFiles(adapter.getAdapterName() + ".xml", adapterTemplate.getBytes()));
             }
         }
+
+        // Return all the Files generated
+        return genFiles;
     }
 }

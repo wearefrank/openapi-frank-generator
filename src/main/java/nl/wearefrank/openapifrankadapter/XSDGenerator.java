@@ -13,8 +13,7 @@ import nl.wearefrank.openapifrankadapter.schemas.Types.SimpleType;
 import nl.wearefrank.openapifrankadapter.schemas.Types.Typing;
 import org.xml.sax.SAXException;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +27,13 @@ public class XSDGenerator {
 
     // Used to store outside parameters given from the xml
 
-    public void execute(String schemaLocation, OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
+    public Writer execute(OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
         this.openAPI = openAPI;
 
-        //// Set up the XML writer
-        // TODO: Ask if xsd is an xml file {xsd.xml}
-        FileOutputStream outputStream = new FileOutputStream(schemaLocation);
-        XmlWriter writer = new XmlWriter(outputStream, true);
+        StringWriter stringWriter = new StringWriter();
+        Writer writerOutput = stringWriter;
+
+        XmlWriter writer = new XmlWriter(writerOutput, true);
         writer.setIncludeXmlDeclaration(true);
         writer.setNewlineAfterXmlDeclaration(true);
         PrettyPrintFilter contentHandler = new PrettyPrintFilter(writer);
@@ -55,6 +54,8 @@ public class XSDGenerator {
         }
         builder.endElement();
         builder.close();
+
+        return writerOutput;
     }
 
     /**
