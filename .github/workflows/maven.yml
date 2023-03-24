@@ -40,4 +40,4 @@ jobs:
 
     # Build the Docker image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date + "-openapifrankadapter")
+      run: docker build . --file Dockerfile --tag openapitofrankadapter:latest
