@@ -11,20 +11,15 @@
    limitations under the License.
 */
 
-package nl.wearefrank.openapifrankadapter.adapter;
+package nl.wearefrank.openapifrankadapter;
 
-import io.swagger.v3.oas.models.PathItem;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-import java.util.Map;
+public class ServletInitializer extends SpringBootServletInitializer {
 
-public class ReceiverClass {
-    private final String receiverName;
-
-    public ReceiverClass(Map.Entry<String, PathItem> path) {
-        this.receiverName = path.getKey().substring(1);  // receiverName: remove the first slash
-    }
-
-    public String getReceiverName() {
-        return "Receiver-" + this.receiverName;
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(OpenapiFrankadapterApplication.class);
     }
 }

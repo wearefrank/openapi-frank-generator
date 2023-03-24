@@ -37,3 +37,7 @@ jobs:
     # Run the tests
     - name: Run tests
       run: mvn test
+
+    # Build the Docker image
+    - name: Build Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date + "-openapifrankadapter")
