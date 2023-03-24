@@ -15,7 +15,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(
+        classes = OpenapiFrankadapterApplication.class
+)
 class TestGetElementAttribute {
 
     String source = System.getProperty("user.dir") + "/src/test/java/TestingOASFile/openapi.json";
