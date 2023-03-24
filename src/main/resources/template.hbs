@@ -24,7 +24,9 @@
             <Json2XmlInputValidator
                     schema="{{adapterRefs.schema}}"
                     root="{{adapterRefs.root}}"
+                    {{#if adapterRefs.responseRoot}}    
                     responseRoot="{{adapterRefs.responseRoot}}"
+                    {{/if}}
                     deepSearch="true">
 
                 {{#each parameters}}

@@ -12,8 +12,10 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -29,7 +31,6 @@ public class XMLGenerator {
             for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation : path.getValue().readOperationsMap().entrySet()) {
 
                 // Create a new AdapterClass
-                System.out.println("Generating adapter for " + path.getKey() + " " + operation.getKey());
                 AdapterClass adapter = new AdapterClass(openAPI, path, operation);
 
                 //// Generate XSD ////
@@ -38,9 +39,15 @@ public class XMLGenerator {
                 genFiles.add(new GenFiles(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
 
                 //// Template ////
-                // Get the template file
-                File templateFile = new File(XMLGenerator.class.getResource("/template.hbs").toURI());
-                String templateString = new String(java.nio.file.Files.readAllBytes(templateFile.toPath()));
+                // Get the template file as an input stream
+                InputStream inputStream = XMLGenerator.class.getResourceAsStream("/template.hbs");
+
+                // Read the input stream into a String
+                String templateString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+                // Close the input stream
+                inputStream.close();
+
 
                 // Create a new Handlebars object
                 Handlebars handlebars = new Handlebars();

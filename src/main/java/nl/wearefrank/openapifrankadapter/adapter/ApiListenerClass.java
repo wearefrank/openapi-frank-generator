@@ -38,6 +38,7 @@ public class ApiListenerClass {
     }
 
     public String getUriPattern() {
+        System.out.println("uriPattern: " + this.uriPattern);
         return this.uriPattern;
     }
 
