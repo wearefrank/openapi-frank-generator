@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 class TestGetElementAttribute {
 
     String source = System.getProperty("user.dir") + "/src/test/java/TestingOASFile/openapi.json";
+    //                 InputStream inputStream = XMLGenerator.class.getResourceAsStream("/template.hbs"); zelfde als dit nodig
     SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
 
     OpenAPI openAPI = result.getOpenAPI();

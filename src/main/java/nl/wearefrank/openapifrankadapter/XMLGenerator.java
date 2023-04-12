@@ -61,7 +61,6 @@ public class XMLGenerator {
                 // Close the input stream
                 inputStream.close();
 
-
                 // Create a new Handlebars object
                 Handlebars handlebars = new Handlebars();
                 Template template = handlebars.compileInline(templateString);

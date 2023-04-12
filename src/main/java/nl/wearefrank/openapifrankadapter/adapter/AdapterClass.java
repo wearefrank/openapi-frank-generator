@@ -26,7 +26,6 @@ public class AdapterClass {
         // adapterName: remove the first slash and replace the remaining slashes with -
         this.adapterName = path.getKey().substring(1).replace("/", "-") + "-" + operation.getKey();
         this.adapterDescription = openAPI.getInfo().getDescription();
-
     }
 
     public String getAdapterName() {

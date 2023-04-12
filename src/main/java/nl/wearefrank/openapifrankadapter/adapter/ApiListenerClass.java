@@ -50,9 +50,7 @@ public class ApiListenerClass {
         return this.method;
     }
 
-    public String getUriPattern() {
-        return this.uriPattern;
-    }
+    public String getUriPattern() { return this.uriPattern; }
 
     ///////////////////////
 

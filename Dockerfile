@@ -21,7 +21,7 @@ RUN mvn package
 FROM tomcat:11.0
 
 # Copy the war file to tomcat's webapps directory
-COPY --from=builder /build/target/*.war /usr/local/tomcat/webapps/waf.war
+COPY --from=builder /build/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
 # Expose port 8080
 EXPOSE 8080
