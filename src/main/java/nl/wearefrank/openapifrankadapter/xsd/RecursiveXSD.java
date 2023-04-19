@@ -15,18 +15,20 @@ package nl.wearefrank.openapifrankadapter.xsd;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
+import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
 import nl.wearefrank.openapifrankadapter.schemas.Element;
 import nl.wearefrank.openapifrankadapter.schemas.HelperClass;
 import nl.wearefrank.openapifrankadapter.schemas.Types.ComplexType;
 import nl.wearefrank.openapifrankadapter.schemas.Types.Reference;
 import nl.wearefrank.openapifrankadapter.schemas.Types.SimpleType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 public class RecursiveXSD {
 
-    static public ComplexType createRecursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required, OpenAPI openAPI) {
+    static public ComplexType createRecursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required, OpenAPI openAPI) throws ErrorApiResponse {
         for (Map.Entry<String, Schema> e : props.entrySet()) {
             String name = e.getKey();
             if (isComplexType(e)) {
@@ -40,12 +42,19 @@ public class RecursiveXSD {
         return complexType;
     }
 
-    private static boolean isComplexType(Map.Entry<String, Schema> e) {
-        String type = getType(e);
-        return type.contains("Type") && !type.equals("numberType");
+    private static boolean isComplexType(Map.Entry<String, Schema> e) throws ErrorApiResponse {
+        try{
+            String type = getType(e);
+            return type.contains("Type") && !type.equals("numberType");
+        }
+        catch (NullPointerException error) {
+            System.out.println(LocalDateTime.now() + " [ERROR {isComplexType}] - " + error.getMessage());
+            String message = "Error in getting Type, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {isComplexType}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
+        }
     }
 
-    private static void createComplexType(Map.Entry<String, Schema> e, String name, ComplexType complexType, OpenAPI openAPI) {
+    private static void createComplexType(Map.Entry<String, Schema> e, String name, ComplexType complexType, OpenAPI openAPI) throws ErrorApiResponse {
         //// REFERENCE ////
         if (e.getValue().get$ref() != null) {
             createReference(name, e.getValue().get$ref(), complexType, openAPI);
@@ -68,19 +77,21 @@ public class RecursiveXSD {
         }
     }
 
-    private static void createSimpleType(Map.Entry<String, Schema> e, String name, ComplexType complexType) {
+    private static void createSimpleType(Map.Entry<String, Schema> e, String name, ComplexType complexType) throws ErrorApiResponse {
         try {
             SimpleType simple = new SimpleType(name, e.getValue().getType());
             simple = HelperClass.getSimpleTypeAttributes(e, simple);
             complexType.addTyping(simple);
         }
         catch (NullPointerException error) {
-            System.out.println("[ERROR {createSimpleType}] - " + error.getMessage());
+            System.out.println(LocalDateTime.now() + " [ERROR {createSimpleType}] - " + error.getMessage());
+            String message = "Error in getting Value and/or Type, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {createSimpleType}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
         }
     }
 
-    // KEEP, WORKS
-    private static void createElement(Map.Entry<String, Schema> e, String name, ComplexType complexType, List<String> required) {
+
+    private static void createElement(Map.Entry<String, Schema> e, String name, ComplexType complexType, List<String> required) throws ErrorApiResponse {
         try {
             Element element = new Element(name);
             element.setType(getType(e));
@@ -88,13 +99,21 @@ public class RecursiveXSD {
             complexType.addElement(element);
         }
         catch (NullPointerException error) {
-            System.out.println("[ERROR {createElement}] - " + error.getMessage());
+            System.out.println(LocalDateTime.now() + " [ERROR {createElement}] - " + error.getMessage());
+            String message = "Error in getting Value and/or Type, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {createElement}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
         }
     }
 
-    // KEEP, WORKS
-    // Both e.getValue().get$ref() and e.getValue().getItems().get$ref() are able to be used.
-    private static void createReference(String name, String ref, ComplexType complexType, OpenAPI openAPI) {
+    /**
+     * Create a reference, add it to the complexType in the current rotation.
+     *
+     * @param name         the name of the reference
+     * @param ref          the reference
+     * @param complexType  the complexType in the current rotation
+     * @param openAPI      the openAPI object
+     */
+    private static void createReference(String name, String ref, ComplexType complexType, OpenAPI openAPI) throws ErrorApiResponse {
         try {
             for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
                 if (HelperClass.isContain(entry.getKey(), ref)) {
@@ -105,7 +124,9 @@ public class RecursiveXSD {
             }
         }
         catch (NullPointerException error) {
-            System.out.println("[ERROR {createReference}] - " + error.getMessage());
+            System.out.println(LocalDateTime.now() + " [ERROR {createReference}] - " + error.getMessage());
+            String message = "Error in getting Schema(s) in a component, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {createReference}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
         }
     }
 
@@ -115,18 +136,25 @@ public class RecursiveXSD {
      * @param e - the schema element
      * @return the OAP type of the element
      */
-    public static String getType(Map.Entry<String, Schema> e) {
-        String type = e.getValue().getType();
+    public static String getType(Map.Entry<String, Schema> e) throws ErrorApiResponse {
+        try {
+            String type = e.getValue().getType();
 
-        if (type != null) {
-            if (type.equals("string") || type.equals("integer") || type.equals("boolean")) {
-                return type;
+            if (type != null) {
+                if (type.equals("string") || type.equals("integer") || type.equals("boolean")) {
+                    return type;
+                }
+                // Number becomes its own type, array refers to the linksType that is used in OAP
+                if (type.equals("number")) {
+                    return type + "Type";
+                }
             }
-            // Number becomes its own type, array refers to the linksType that is used in OAP
-            if (type.equals("number")) {
-                return type + "Type";
-            }
+            return e.getKey() + "Type";
         }
-        return e.getKey() + "Type";
+        catch (NullPointerException error) {
+            System.out.println(LocalDateTime.now() + " [ERROR {getType}] - " + error.getMessage());
+            String message = "Error in getting Value and/or Type, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {getType}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
+        }
     }
 }

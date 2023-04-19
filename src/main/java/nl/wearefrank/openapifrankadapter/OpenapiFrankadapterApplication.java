@@ -16,8 +16,8 @@ package nl.wearefrank.openapifrankadapter;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -52,7 +51,13 @@ public class OpenapiFrankadapterApplication {
     }
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, URISyntaxException, SAXException {
+    public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+        // Check if it's a JSON file
+        if (!file.getContentType().equals("application/json")) {
+            return ResponseEntity.status(415)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+        }
 
         //// INITIALIZATION ////
         // Generate random folder for which to process the API request
@@ -64,10 +69,17 @@ public class OpenapiFrankadapterApplication {
 
         // Read the openapi specification
         SwaggerParseResult result = new OpenAPIParser().readContents(json, null, null);
-
         OpenAPI openAPI = result.getOpenAPI();
-        LinkedList<GenFiles> genFiles = XMLGenerator.execute(openAPI);
-
+        LinkedList<GenFiles> genFiles;
+        // Try catch for error handling return
+        try{
+            genFiles = XMLGenerator.execute(openAPI);
+        }
+        catch (ErrorApiResponse error){
+            return ResponseEntity.status(error.getStatus())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream(error.getMessage().getBytes())));
+        }
         byte[] response = convertToZip(genFiles);
 
         // Return the zip file as a resource

@@ -20,10 +20,12 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import nl.wearefrank.openapifrankadapter.XSDGenerator;
+import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
 import org.xml.sax.SAXException;
 
 import java.io.FileNotFoundException;
 import java.io.Writer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,33 +37,40 @@ public class AdapterRefs {
     public String responseRoot;
     List<String> parameters = new ArrayList<>();
 
-    public AdapterRefs(OpenAPI openAPI, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) throws FileNotFoundException, SAXException {
-        // List of references
-        this.refs = new ArrayList<>();
-        fillRefs(operation.getValue().getResponses());
+    public AdapterRefs(OpenAPI openAPI, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) throws SAXException, FileNotFoundException, ErrorApiResponse {
+        try{
+            // List of references
+            this.refs = new ArrayList<>();
+            fillRefs(operation.getValue().getResponses());
 
-        // List of parameters
-        if (operation.getValue().getParameters() != null) {
-            List<Parameter> getParams = operation.getValue().getParameters();
-            for (Parameter parameter : getParams) {
-                if (!parameters.contains(parameter.getName()))
-                    parameters.add(parameter.getName());
+            // List of parameters
+            if (operation.getValue().getParameters() != null) {
+                List<Parameter> getParams = operation.getValue().getParameters();
+                for (Parameter parameter : getParams) {
+                    if (!parameters.contains(parameter.getName()))
+                        parameters.add(parameter.getName());
+                }
+            }
+
+            XSDGenerator xsdGenerator = new XSDGenerator();
+            this.xsd = xsdGenerator.execute(openAPI, uniqueRefs());
+
+            root = uniqueRefs().get(0);
+            responseRoot = "";
+
+            for (int i = 1; i < uniqueRefs().size(); i++) {
+                // if the last value, add a closing tag
+                if (i == uniqueRefs().size() - 1) {
+                    responseRoot += uniqueRefs().get(i);
+                } else {
+                    responseRoot += uniqueRefs().get(i) + ", ";
+                }
             }
         }
-
-        XSDGenerator xsdGenerator = new XSDGenerator();
-        this.xsd = xsdGenerator.execute(openAPI, uniqueRefs());
-
-        root = uniqueRefs().get(0);
-        responseRoot = "";
-
-        for (int i = 1; i < uniqueRefs().size(); i++) {
-            // if the last value, add a closing tag
-            if (i == uniqueRefs().size() - 1) {
-                responseRoot += uniqueRefs().get(i);
-            } else {
-                responseRoot += uniqueRefs().get(i) + ", ";
-            }
+        catch (RuntimeException error) {
+            System.out.println(LocalDateTime.now() + " [ERROR {AdapterRefs}] - " + error.getMessage());
+            String message = "Error in getting the (unique/root) references, as they are null or incorrect. Check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {AdapterRefs}] - " + error.getMessage();
+            throw new ErrorApiResponse(500, message);
         }
     }
 
@@ -82,7 +91,6 @@ public class AdapterRefs {
             }
 
             for (Map.Entry<String, MediaType> entry : response.get(code).getContent().entrySet()) {
-                //System.out.println(entry.getKey());
                 String ref = entry.getValue().getSchema().get$ref();
 
                 if (ref == null) {

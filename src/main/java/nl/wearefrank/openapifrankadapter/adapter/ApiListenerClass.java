@@ -29,7 +29,7 @@ public class ApiListenerClass {
     private final String uriPattern;
 
     public ApiListenerClass(Map.Entry<String, PathItem> path) {
-        this.apiListenerName = path.getKey().substring(1);  // apiListenerName: remove the first slash
+        this.apiListenerName = path.getKey().substring(1);
         this.uriPattern = path.getKey();
         for (Map.Entry<String, Operation> operation : getOperations(path.getValue()).entrySet()) {
             this.method = operation.getKey();

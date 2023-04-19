@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class XSDGenerator {
 
-    public Writer execute(OpenAPI openAPI, ArrayList<String> refs) throws SAXException, FileNotFoundException {
+    public Writer execute(OpenAPI openAPI, ArrayList<String> refs) throws SAXException {
 
         StringWriter stringWriter = new StringWriter();
         Writer writerOutput = stringWriter;
@@ -39,13 +39,11 @@ public class XSDGenerator {
         PrettyPrintFilter contentHandler = new PrettyPrintFilter(writer);
 
         //// Set up the XML builder
-        System.out.println("[XSD BUILDER] Setting up the XML builder...");
         SaxDocumentBuilder builder = new SaxDocumentBuilder("xs:schema", contentHandler);
         builder.addAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
         builder.addAttribute("xmlns:tns", "http://www.example.org");
         builder.addAttribute("targetNamespace", "http://www.example.org");
         builder.addAttribute("elementFormDefault", "qualified");
-        System.out.println("[XSD BUILDER] Starting build of xsd...");
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
             //TODO: use this for check:   boolean isRef = refs.contains(entry.getKey());
             if (refs.contains(entry.getKey())) {
@@ -53,10 +51,8 @@ public class XSDGenerator {
                 result.AddToBuilder(builder);
             }
         }
-        System.out.println("[XSD BUILDER] Closing elements...");
         builder.endElement();
         builder.close();
-        System.out.println("[XSD BUILDER] Done building xsd...");
 
         return writerOutput;
     }

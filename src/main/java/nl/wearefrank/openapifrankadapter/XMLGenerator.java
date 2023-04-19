@@ -21,19 +21,17 @@ import io.swagger.v3.oas.models.Paths;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterClass;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterJsonfiyer;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterRefs;
+import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
 import org.xml.sax.SAXException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public LinkedList<GenFiles> execute(OpenAPI openAPI) throws IOException, SAXException, URISyntaxException {
+    static public LinkedList<GenFiles> execute(OpenAPI openAPI) throws SAXException, ErrorApiResponse, IOException {
         Paths paths = openAPI.getPaths();
 
         LinkedList<GenFiles> genFiles = new LinkedList<>();
