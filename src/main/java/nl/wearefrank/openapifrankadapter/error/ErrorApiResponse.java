@@ -14,8 +14,8 @@
 package nl.wearefrank.openapifrankadapter.error;
 
 public class ErrorApiResponse extends NullPointerException {
-    private String message;
-    private int code;
+    private final String message;
+    private final int code;
 
     public ErrorApiResponse(int code, String message) {
         this.code = code;
@@ -23,7 +23,7 @@ public class ErrorApiResponse extends NullPointerException {
     }
 
     public String getMessage() {
-        return message;
+        return "{\"message\": \"" + message + "\"}";
     }
 
     public int getStatus() {

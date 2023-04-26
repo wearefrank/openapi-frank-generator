@@ -50,7 +50,7 @@ public class OpenapiFrankadapterApplication {
 
     }
 
-    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
         if (!file.getContentType().equals("application/json")) {
@@ -61,8 +61,7 @@ public class OpenapiFrankadapterApplication {
 
         //// INITIALIZATION ////
         // Generate random folder for which to process the API request
-        String uuid = UUID.randomUUID().toString() + LocalDateTime.now();
-        uuid = uuid.replaceAll("[^a-zA-Z0-9]", "");
+        String uuid = UUID.randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "");
 
         // Convert the incoming JSON multipart file to String
         String json = new String(file.getBytes());
