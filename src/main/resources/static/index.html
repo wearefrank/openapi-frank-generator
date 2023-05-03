@@ -22,6 +22,15 @@
             background-color: #fff;
         }
 
+        /* center the section, make the text small, dark grey color and curved */
+        section {
+            margin: 2rem;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #454545;
+            font-style: italic;
+        }
+
         /* Header styles */
         header {
             background-color: #FDC300;
@@ -112,6 +121,11 @@
     <input type="file" id="openapi-file" name="file" accept="application/json" />
     <input type="submit" name="submit" value="Convert" />
 </form>
+<section>
+    <p>⚠️ Notice ⚠️</p>
+    <p>Paths without references will be left blank in the XSD!</p>
+    <P>Make sure that the OpenAPI document is valid.</P>
+</section>
 <footer>
     &copy; WeAreFrank 2023
 </footer>

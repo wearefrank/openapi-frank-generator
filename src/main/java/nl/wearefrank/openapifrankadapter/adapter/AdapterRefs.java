@@ -41,6 +41,7 @@ public class AdapterRefs {
         try{
             // List of references
             this.refs = new ArrayList<>();
+            System.out.println(operation.getValue().getResponses());
             fillRefs(operation.getValue().getResponses());
 
             // List of parameters
@@ -52,19 +53,29 @@ public class AdapterRefs {
                 }
             }
 
+            ArrayList<String> filteredReferences = uniqueRefs();
+            System.out.println("Filtered references: " + filteredReferences);
+
             XSDGenerator xsdGenerator = new XSDGenerator();
-            this.xsd = xsdGenerator.execute(openAPI, uniqueRefs());
+            this.xsd = xsdGenerator.execute(openAPI, filteredReferences);
 
-            root = uniqueRefs().get(0);
-            responseRoot = "";
+            try{
+                root = filteredReferences.get(0);
+                responseRoot = "";
 
-            for (int i = 1; i < uniqueRefs().size(); i++) {
-                // if the last value, add a closing tag
-                if (i == uniqueRefs().size() - 1) {
-                    responseRoot += uniqueRefs().get(i);
-                } else {
-                    responseRoot += uniqueRefs().get(i) + ", ";
+                for (int i = 1; i < filteredReferences.size(); i++) {
+                    // if the last value, add a closing tag
+                    if (i == filteredReferences.size() - 1) {
+                        responseRoot += filteredReferences.get(i);
+                    } else {
+                        responseRoot += filteredReferences.get(i) + ", ";
+                    }
                 }
+            }
+            catch (IndexOutOfBoundsException error) {
+                // This means that the filteredReferences is empty, so the root and responseRoot should be empty
+                root = "";
+                responseRoot = "";
             }
         }
         catch (RuntimeException error) {
@@ -92,6 +103,7 @@ public class AdapterRefs {
 
             for (Map.Entry<String, MediaType> entry : response.get(code).getContent().entrySet()) {
                 String ref = entry.getValue().getSchema().get$ref();
+                System.out.println("Ref: " + ref);
 
                 if (ref == null) {
                     if (entry.getValue().getSchema().getType().equals("array")) {
@@ -106,6 +118,7 @@ public class AdapterRefs {
                 String[] parts = ref.split("/");
                 String lastPart = parts[parts.length - 1];
 
+                System.out.println("Adding ref: " + lastPart);
                 this.refs.add(lastPart);
             }
         }
@@ -116,6 +129,7 @@ public class AdapterRefs {
         ArrayList<String> uniqueRefs = new ArrayList<>();
         for (String ref : this.refs) {
             if (!uniqueRefs.contains(ref)) {
+                System.out.println("Adding unique ref: " + ref);
                 uniqueRefs.add(ref);
             }
         }

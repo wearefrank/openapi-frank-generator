@@ -65,6 +65,7 @@ public class ApiListenerClass {
                 .map(LinkedHashMap::entrySet)
                 .map(Collection::stream)
                 .map(Stream::findAny)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(Map.Entry::getKey)
                 .orElse("");
