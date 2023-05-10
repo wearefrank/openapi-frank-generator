@@ -64,7 +64,6 @@ public class AdapterJsonfiyer {
         adapterJson.put("exits",adapterExits.exits);
 
         // Return the JSONObject
-        System.out.println("adapterJson: " + adapterJson);
         return adapterJson;
     }
 }

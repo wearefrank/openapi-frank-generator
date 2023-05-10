@@ -11,7 +11,21 @@
             <Exits>
                 {{#each exits}}
                     {{#with this as |Response|}}
-                        <test {{Response.statuscode}}>
+                        {{#when Response.statuscode 'eq' '200'}}
+                            <Exit path="Success" state="SUCCESS" code="200" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '201'}}
+                            <Exit path="Created" state="SUCCESS" code="201" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '202'}}
+                            <Exit path="Accepted" state="SUCCESS" code="202" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '204'}}
+                            <Exit path="NoContent" state="SUCCESS" code="204" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '301'}}
+                            <Exit path="MovedPermanently" state="SUCCESS" code="301" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
                         {{#when Response.statuscode 'eq' '304'}}
                             <Exit path="NotModified" state="SUCCESS" code="304" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
                         {{/when}}
