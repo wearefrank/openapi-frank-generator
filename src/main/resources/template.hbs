@@ -9,18 +9,37 @@
         </Receiver>
         <Pipeline>
             <Exits>
-                <Exit path="EXIT" state="SUCCESS" code="200"/>
-                <Exit path="NotModified" state="SUCCESS" code="304"/>
-                <Exit path="BadRequest" state="ERROR" code="400"/>
-                <Exit path="NotAuthorized" state="ERROR" code="401" empty="true"/>
-                <Exit path="NotAllowed" state="ERROR" code="403" empty="true"/>
-                <Exit path="PreconditionFailed" state="ERROR" code="412"/>
-                <Exit path="ServerError" state="ERROR" code="500"/>
-                <Exit path="Timeout" state="ERROR" code="504"/>
+                {{#each exits}}
+                    {{#with this as |Response|}}
+                        <test {{Response.statuscode}}>
+                        {{#when Response.statuscode 'eq' '304'}}
+                            <Exit path="NotModified" state="SUCCESS" code="304" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '400'}}
+                            <Exit path="BadRequest" state="ERROR" code="400" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '401'}}
+                            <Exit path="NotAuthorized" state="ERROR" code="401" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '403'}}
+                            <Exit path="NotAllowed" state="ERROR" code="403" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '412'}}
+                            <Exit path="PreconditionFailed" state="ERROR" code="412" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '500'}}
+                            <Exit path="ServerError" state="ERROR" code="500" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                        {{#when Response.statuscode 'eq' '504'}}
+                            <Exit path="Timeout" state="ERROR" code="504" {{#when Response.isEmpty 'eq' "true"}}empty="true"{{/when}} />
+                        {{/when}}
+                    {{/with}}
+                {{/each}}
             </Exits>
 
             <FixedResultPipeline name="Helloworld" result="Hello World!"/>
 
+            {{#if adapterRefs.root}}
             <Json2XmlInputValidator
                     schema="{{adapterRefs.schema}}"
                     root="{{adapterRefs.root}}"
@@ -38,6 +57,7 @@
                 <Forward name="illegalRoot" path="IllegalRoot"/>
                 <Forward name="failure" path="InvalidXml"/>
             </Json2XmlInputValidator>
+            {{/if}}
         </Pipeline>
     </Adapter>
 </Configuration>

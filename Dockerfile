@@ -1,6 +1,9 @@
 # BUILD image
 FROM maven:3.9 AS builder
 
+# Set locale to UTF-8
+ENV LANG=C.UTF-8
+
 # create app folder for sources
 RUN mkdir -p /build
 WORKDIR /build
@@ -19,6 +22,9 @@ RUN mvn package
 
 # RUN image
 FROM tomcat:11.0
+
+# Set locale to UTF-8
+ENV LANG=C.UTF-8
 
 # Copy the war file to tomcat's webapps directory
 COPY --from=builder /build/target/*.war /usr/local/tomcat/webapps/ROOT.war

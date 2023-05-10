@@ -41,7 +41,6 @@ public class AdapterRefs {
         try{
             // List of references
             this.refs = new ArrayList<>();
-            System.out.println(operation.getValue().getResponses());
             fillRefs(operation.getValue().getResponses());
 
             // List of parameters
@@ -54,10 +53,6 @@ public class AdapterRefs {
             }
 
             ArrayList<String> filteredReferences = uniqueRefs();
-            System.out.println("Filtered references: " + filteredReferences);
-
-            XSDGenerator xsdGenerator = new XSDGenerator();
-            this.xsd = xsdGenerator.execute(openAPI, filteredReferences);
 
             try{
                 root = filteredReferences.get(0);
@@ -74,8 +69,13 @@ public class AdapterRefs {
             }
             catch (IndexOutOfBoundsException error) {
                 // This means that the filteredReferences is empty, so the root and responseRoot should be empty
-                root = "";
-                responseRoot = "";
+                root = null;
+            }
+
+            // Generate XSD IF there is a root
+            if (root != null) {
+                XSDGenerator xsdGenerator = new XSDGenerator();
+                this.xsd = xsdGenerator.execute(openAPI, filteredReferences);
             }
         }
         catch (RuntimeException error) {
@@ -103,14 +103,11 @@ public class AdapterRefs {
 
             for (Map.Entry<String, MediaType> entry : response.get(code).getContent().entrySet()) {
                 String ref = entry.getValue().getSchema().get$ref();
-                System.out.println("Ref: " + ref);
-
                 if (ref == null) {
                     if (entry.getValue().getSchema().getType().equals("array")) {
                         ref = entry.getValue().getSchema().getItems().get$ref();
                     }
                     else {
-                        System.out.println("No ref found " + entry);
                         continue;
                     }
                 }
@@ -118,7 +115,6 @@ public class AdapterRefs {
                 String[] parts = ref.split("/");
                 String lastPart = parts[parts.length - 1];
 
-                System.out.println("Adding ref: " + lastPart);
                 this.refs.add(lastPart);
             }
         }
@@ -129,7 +125,6 @@ public class AdapterRefs {
         ArrayList<String> uniqueRefs = new ArrayList<>();
         for (String ref : this.refs) {
             if (!uniqueRefs.contains(ref)) {
-                System.out.println("Adding unique ref: " + ref);
                 uniqueRefs.add(ref);
             }
         }

@@ -21,11 +21,13 @@ import java.util.Map;
 public class AdapterJsonfiyer {
     AdapterClass adapter;
     AdapterRefs adapterRefs;
+    AdapterExits adapterExits;
     Map.Entry<String, PathItem> path;
 
-    public AdapterJsonfiyer(AdapterClass adapter, AdapterRefs adapterRefs, Map.Entry<String, PathItem> path) {
+    public AdapterJsonfiyer(AdapterClass adapter, AdapterRefs adapterRefs, AdapterExits adapterExits, Map.Entry<String, PathItem> path) {
         this.adapter = adapter;
         this.adapterRefs = adapterRefs;
+        this.adapterExits = adapterExits;
         this.path = path;
     }
 
@@ -56,13 +58,13 @@ public class AdapterJsonfiyer {
         adapterRefsJson.put("root", this.adapterRefs.root);
         adapterRefsJson.put("responseRoot", this.adapterRefs.responseRoot);
         adapterJson.put("adapterRefs", adapterRefsJson);
-
-        // instantiate params as a String array
-        String[] params = adapterRefs.parameters.toArray(new String[0]);
         // add the params as a JSONObject
-        adapterJson.put("parameters", params);
+        adapterJson.put("parameters", adapterRefs.parameters.toArray(new String[0]));
+        // Add the adapterExits
+        adapterJson.put("exits",adapterExits.exits);
 
         // Return the JSONObject
+        System.out.println("adapterJson: " + adapterJson);
         return adapterJson;
     }
 }

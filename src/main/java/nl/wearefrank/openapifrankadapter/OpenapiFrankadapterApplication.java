@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class OpenapiFrankadapterApplication {
     @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().equals("application/json")) {
+        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml") ) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
@@ -79,7 +80,7 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream(error.getMessage().getBytes())));
         }
-        byte[] response = convertToZip(genFiles);
+        byte[] response = convertToZip(genFiles, file);
 
         // Return the zip file as a resource
         HttpHeaders headers = new HttpHeaders();
@@ -91,9 +92,14 @@ public class OpenapiFrankadapterApplication {
                 .body(new InputStreamResource(new ByteArrayInputStream(response)));
     }
 
-    public static byte[] convertToZip(LinkedList<GenFiles> files) throws IOException {
+    public static byte[] convertToZip(LinkedList<GenFiles> files, MultipartFile init_json) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+
+        ZipEntry initial = new ZipEntry("inputed-api.json");
+        zipOutputStream.putNextEntry(initial);
+        zipOutputStream.write(init_json.getBytes());
+        zipOutputStream.closeEntry();
 
         for (GenFiles file : files) {
             ZipEntry entry = new ZipEntry(file.getName());

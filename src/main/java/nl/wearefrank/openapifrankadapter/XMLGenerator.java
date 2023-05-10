@@ -19,6 +19,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterClass;
+import nl.wearefrank.openapifrankadapter.adapter.AdapterExits;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterJsonfiyer;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterRefs;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
@@ -47,7 +48,14 @@ public class XMLGenerator {
                 //// Generate XSD ////
                 // Generate XSD for the adapter, add it to GenFiles (name + xsd, content as byte[])
                 AdapterRefs adapterRefs = new AdapterRefs(openAPI, operation);
-                genFiles.add(new GenFiles(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
+                // Check if there is a need to generate an XSD
+                if (adapterRefs.root != null) {
+                    genFiles.add(new GenFiles(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
+                }
+
+                //// Generate Exits ////
+                AdapterExits adapterExits = new AdapterExits();
+                adapterExits.GetAdapterExits(operation);
 
                 //// Template ////
                 // Get the template file as an input stream
@@ -61,10 +69,11 @@ public class XMLGenerator {
 
                 // Create a new Handlebars object
                 Handlebars handlebars = new Handlebars();
+                handlebars.registerHelper("when", new WhenHelper());
                 Template template = handlebars.compileInline(templateString);
 
                 // Create JSON and apply the template
-                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(adapter, adapterRefs, path);
+                AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(adapter, adapterRefs, adapterExits, path);
                 String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
                 // Export the template to xml file
