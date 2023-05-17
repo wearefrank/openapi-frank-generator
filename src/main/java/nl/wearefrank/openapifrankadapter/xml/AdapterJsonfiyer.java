@@ -11,9 +11,13 @@
    limitations under the License.
 */
 
-package nl.wearefrank.openapifrankadapter.adapter;
+package nl.wearefrank.openapifrankadapter.xml;
 
 import io.swagger.v3.oas.models.PathItem;
+import nl.wearefrank.openapifrankadapter.Option;
+import nl.wearefrank.openapifrankadapter.xml.receiver.ApiListenerClass;
+import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverClass;
+import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverJSONObject;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -32,7 +36,7 @@ public class AdapterJsonfiyer {
     }
 
     // Convert string to JSON
-    public JSONObject getAdapterJsonObj() {
+    public JSONObject getAdapterJsonObj(Option templateOption) {
         // First make the new JSONObject
         JSONObject adapterJson = new JSONObject();
         // Add the name
@@ -40,18 +44,15 @@ public class AdapterJsonfiyer {
         // Add the description
         adapterJson.put("description", this.adapter.getAdapterDescription());
         // Add the type
-        adapterJson.put("type", "adapter");
-        // Add the receiver
-        JSONObject receiverJson = new JSONObject();
-        receiverJson.put("name", new ReceiverClass(this.path).getReceiverName());
-        adapterJson.put("receiver", receiverJson);
-        // Add the apiListener
-        JSONObject apiListenerJson = new JSONObject();
-        apiListenerJson.put("name", new ApiListenerClass(this.path).getApiListenerName());
-        apiListenerJson.put("method", new ApiListenerClass(this.path).getMethod());
-        apiListenerJson.put("uriPattern", new ApiListenerClass(this.path).getUriPattern());
-        apiListenerJson.put("produces", new ApiListenerClass(this.path).getProduces());
-        adapterJson.put("apiListener", apiListenerJson);
+        adapterJson.put("type", "xml");
+
+        switch (templateOption){
+            case RECEIVER:
+                adapterJson = ReceiverJSONObject.getReceiverJsonObj(adapterJson, this.path);
+            case SENDER:
+                //adapterJson = ReceiverJSONObject.getReceiverJsonObj(adapterJson, this.path);
+        }
+
         // Add the adapterRefs
         JSONObject adapterRefsJson = new JSONObject();
         adapterRefsJson.put("schema",  this.adapter.getAdapterName() + ".xsd");

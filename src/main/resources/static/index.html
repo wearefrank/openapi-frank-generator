@@ -116,10 +116,14 @@
 <header>
     <div class="logo">OpenAPI2Frank</div>
 </header>
-<form method="post" action="/convert" enctype="multipart/form-data">
+<form method="post" action="/" enctype="multipart/form-data" class="center">
     <label for="openapi-file">Select an OpenAPI document:</label>
     <input type="file" id="openapi-file" name="file" accept="application/json" />
-    <input type="submit" name="submit" value="Convert" />
+
+    <div class="center">
+        <input type="submit" name="submit" value="Receiver" class="inline" formaction="/receiver" />
+        <input type="submit" name="submit" value="Sender" class="inline" formaction="/sender" />
+    </div>
 </form>
 <section>
     <p> &#x26A0; Notice &#x26A0; </p>

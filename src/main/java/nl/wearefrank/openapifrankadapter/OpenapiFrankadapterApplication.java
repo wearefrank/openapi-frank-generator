@@ -45,18 +45,33 @@ public class OpenapiFrankadapterApplication {
 
         SpringApplication.run(OpenapiFrankadapterApplication.class, args);
 
-        // TODO: Clean the processing folder on startup
-
     }
 
-    @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Resource> postFile(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+    @PostMapping(value = "/receiver", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml") ) {
+        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+        } else {
+            return responseGenerator(file, Option.RECEIVER);
         }
+    }
+
+    @PostMapping(value = "/sender", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+        // Check if it's a JSON file
+        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
+            return ResponseEntity.status(415)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+        } else {
+            return responseGenerator(file, Option.SENDER);
+        }
+    }
+
+    public static ResponseEntity responseGenerator(MultipartFile file, Option templateOption) throws IOException, SAXException {
 
         //// INITIALIZATION ////
         // Generate random folder for which to process the API request
@@ -70,10 +85,9 @@ public class OpenapiFrankadapterApplication {
         OpenAPI openAPI = result.getOpenAPI();
         LinkedList<GenFiles> genFiles;
         // Try catch for error handling return
-        try{
-            genFiles = XMLGenerator.execute(openAPI);
-        }
-        catch (ErrorApiResponse error){
+        try {
+            genFiles = XMLGenerator.execute(openAPI, templateOption);
+        } catch (ErrorApiResponse error) {
             return ResponseEntity.status(error.getStatus())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream(error.getMessage().getBytes())));

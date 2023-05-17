@@ -18,11 +18,12 @@ import com.github.jknack.handlebars.Template;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import nl.wearefrank.openapifrankadapter.adapter.AdapterClass;
-import nl.wearefrank.openapifrankadapter.adapter.AdapterExits;
-import nl.wearefrank.openapifrankadapter.adapter.AdapterJsonfiyer;
-import nl.wearefrank.openapifrankadapter.adapter.AdapterRefs;
+import nl.wearefrank.openapifrankadapter.xml.AdapterClass;
+import nl.wearefrank.openapifrankadapter.xml.AdapterExits;
+import nl.wearefrank.openapifrankadapter.xml.AdapterJsonfiyer;
+import nl.wearefrank.openapifrankadapter.xml.AdapterRefs;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
+import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverJSONObject;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -36,7 +37,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public LinkedList<GenFiles> execute(OpenAPI openAPI) throws SAXException, ErrorApiResponse, IOException {
+    static public LinkedList<GenFiles> execute(OpenAPI openAPI, Option templateOption) throws SAXException, ErrorApiResponse, IOException {
         Paths paths = openAPI.getPaths();
 
         LinkedList<GenFiles> genFiles = new LinkedList<>();
@@ -50,7 +51,7 @@ public class XMLGenerator {
                 AdapterClass adapter = new AdapterClass(openAPI, path, operation);
 
                 //// Generate XSD ////
-                // Generate XSD for the adapter, add it to GenFiles (name + xsd, content as byte[])
+                // Generate XSD for the xml, add it to GenFiles (name + xsd, content as byte[])
                 AdapterRefs adapterRefs = new AdapterRefs(openAPI, operation);
                 // Check if there is a need to generate an XSD
                 if (adapterRefs.root != null) {
@@ -63,7 +64,14 @@ public class XMLGenerator {
 
                 //// Template ////
                 // Get the template file as an input stream
-                InputStream inputStream = XMLGenerator.class.getResourceAsStream("/template.hbs");
+                InputStream inputStream = null;
+
+                switch (templateOption){
+                    case RECEIVER:
+                        inputStream = XMLGenerator.class.getResourceAsStream("/templates/receiverTemplate.hbs");
+                    case SENDER:
+                        //inputStream = XMLGenerator.class.getResourceAsStream("/templates/receiverTemplate.hbs");
+                }
 
                 // Read the input stream into a String
                 String templateString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
@@ -78,7 +86,7 @@ public class XMLGenerator {
 
                 // Create JSON and apply the template
                 AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(adapter, adapterRefs, adapterExits, path);
-                String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
+                String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj(templateOption));
 
                 // Pretty print the XML
                 String prettyTemplate = prettyPrintByDom4j(adapterTemplate, 8, false);

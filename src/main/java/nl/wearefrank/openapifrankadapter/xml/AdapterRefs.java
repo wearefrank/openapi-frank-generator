@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-package nl.wearefrank.openapifrankadapter.adapter;
+package nl.wearefrank.openapifrankadapter.xml;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;

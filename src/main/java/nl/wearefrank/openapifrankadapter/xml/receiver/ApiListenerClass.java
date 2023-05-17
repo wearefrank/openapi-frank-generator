@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-package nl.wearefrank.openapifrankadapter.adapter;
+package nl.wearefrank.openapifrankadapter.xml.receiver;
 
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -127,10 +127,10 @@ public class ApiListenerClass {
     }
 
     /**
-     * Get the operations of this adapter
+     * Get the operations of this xml
      *
-     * @param item - the path that represents an adapter
-     * @return a list of operations in the adapter/path
+     * @param item - the path that represents an xml
+     * @return a list of operations in the xml/path
      */
     public static Map<String, Operation> getOperations(PathItem item) {
         Map<String, Operation> operations = new HashMap<>();
@@ -163,7 +163,7 @@ public class ApiListenerClass {
             }
 
         } catch (NullPointerException e) {
-            System.out.println("Warning! No operations found for this adapter");
+            System.out.println("Warning! No operations found for this xml");
             e.printStackTrace();
             throw e;
         }
