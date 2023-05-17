@@ -60,6 +60,7 @@ public class AdapterExits {
             catch (NullPointerException error) {
                 // Do nothing
             }
+            //// No REF found
             if (!skip) {exits.add(new Response(responseCode, "true"));}
         }
         return exits;
