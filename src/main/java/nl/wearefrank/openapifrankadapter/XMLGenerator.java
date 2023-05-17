@@ -23,10 +23,14 @@ import nl.wearefrank.openapifrankadapter.adapter.AdapterExits;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterJsonfiyer;
 import nl.wearefrank.openapifrankadapter.adapter.AdapterRefs;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Map;
@@ -76,12 +80,33 @@ public class XMLGenerator {
                 AdapterJsonfiyer adapterJsonfiyer = new AdapterJsonfiyer(adapter, adapterRefs, adapterExits, path);
                 String adapterTemplate = template.apply(adapterJsonfiyer.getAdapterJsonObj());
 
+                // Pretty print the XML
+                String prettyTemplate = prettyPrintByDom4j(adapterTemplate, 8, false);
+
                 // Export the template to xml file
-                genFiles.add(new GenFiles(adapter.getAdapterName() + ".xml", adapterTemplate.getBytes()));
+                genFiles.add(new GenFiles(adapter.getAdapterName() + ".xml", prettyTemplate.getBytes()));
             }
         }
 
         // Return all the Files generated
         return genFiles;
+    }
+
+    //// Method to pretty-fy XML ////
+    public static String prettyPrintByDom4j(String xmlString, int indent, boolean skipDeclaration) {
+        try {
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            format.setIndentSize(indent);
+            format.setSuppressDeclaration(skipDeclaration);
+            format.setEncoding("UTF-8");
+
+            org.dom4j.Document document = DocumentHelper.parseText(xmlString);
+            StringWriter sw = new StringWriter();
+            XMLWriter writer = new XMLWriter(sw, format);
+            writer.write(document);
+            return sw.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurs when pretty-printing xml:\n" + xmlString, e);
+        }
     }
 }

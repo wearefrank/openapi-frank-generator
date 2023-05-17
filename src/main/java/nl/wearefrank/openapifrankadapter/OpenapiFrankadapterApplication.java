@@ -32,8 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -92,6 +90,7 @@ public class OpenapiFrankadapterApplication {
                 .body(new InputStreamResource(new ByteArrayInputStream(response)));
     }
 
+    //// Method to convert in-memory files into a singular zip file ////
     public static byte[] convertToZip(LinkedList<GenFiles> files, MultipartFile init_json) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
