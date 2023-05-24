@@ -46,9 +46,9 @@ public class XSDGenerator {
         builder.addAttribute("elementFormDefault", "qualified");
         for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
             //TODO: use this for check:   boolean isRef = refs.contains(entry.getKey());
-            if (refs.contains(entry.getKey())) {
-                Typing result = XsdEntry.createXSDEntry(entry.getKey(), entry.getValue(), openAPI);
-                result.AddToBuilder(builder);
+            if (refs.contains(entry.getKey()) && entry.getValue() != null) {
+                    Typing result = XsdEntry.createXSDEntry(entry.getKey(), entry.getValue(), openAPI);
+                    result.AddToBuilder(builder);
             }
         }
         builder.endElement();

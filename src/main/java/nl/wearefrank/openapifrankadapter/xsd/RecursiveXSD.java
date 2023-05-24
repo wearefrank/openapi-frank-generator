@@ -55,6 +55,12 @@ public class RecursiveXSD {
     }
 
     private static void createComplexType(Map.Entry<String, Schema> e, String name, ComplexType complexType, OpenAPI openAPI) throws ErrorApiResponse {
+        if (e == null){
+            System.out.println(LocalDateTime.now() + " [ERROR {createComplexType}] - " + "Entry is null");
+            String message = "Error in getting Entry, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {createComplexType}] - " + "Entry is null";
+            throw new ErrorApiResponse(500, message);
+        }
+
         //// REFERENCE ////
         if (e.getValue().get$ref() != null) {
             createReference(name, e.getValue().get$ref(), complexType, openAPI);
@@ -72,8 +78,10 @@ public class RecursiveXSD {
                 createSimpleType(e, name, complexType);}
 
         } else {
-            //// RECURSION, NORMAL ////
-            complexType.addTyping(XsdEntry.createXSDEntry(name, e.getValue().getItems(), openAPI));
+            if (e.getValue().getItems() != null){
+                //// RECURSION, NORMAL ////
+                complexType.addTyping(XsdEntry.createXSDEntry(name, e.getValue().getItems(), openAPI));
+            }
         }
     }
 
@@ -116,7 +124,7 @@ public class RecursiveXSD {
     private static void createReference(String name, String ref, ComplexType complexType, OpenAPI openAPI) throws ErrorApiResponse {
         try {
             for (Map.Entry<String, Schema> entry : openAPI.getComponents().getSchemas().entrySet()) {
-                if (HelperClass.isContain(entry.getKey(), ref)) {
+                if (HelperClass.isContain(entry.getKey(), ref) && entry.getValue() != null) {
                     Reference reference = new Reference(name);
                     reference.addTyping(XsdEntry.createXSDEntry(entry.getKey(), entry.getValue(), openAPI));
                     complexType.addTyping(reference);

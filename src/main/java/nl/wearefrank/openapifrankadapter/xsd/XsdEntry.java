@@ -47,13 +47,19 @@ public class XsdEntry {
 
             } catch (NullPointerException e) {
                 //// COMPLEXTYPE ////
-                Map<String, Schema> props = entry.getProperties();
-                return createComplexType(key, props, required, openAPI);
+                try{
+                    Map<String, Schema> props = entry.getProperties();
+                    return createComplexType(key, props, required, openAPI);
+                } catch (NullPointerException error) {
+                    System.out.println(LocalDateTime.now() + " [ERROR {createXSDEntry}] - " + error.getMessage());
+                    String message = "Error in reading the OpenApiSpecification, check if the OpenApiSpecification does not contain errors or invalid entries... COMPLEXTYPE INITIAL" + " [ERROR {createXSDEntry}] - " + error.getMessage();
+                    throw new ErrorApiResponse(500, message);
+                }
             }
 
         } catch (NullPointerException error) {
             System.out.println(LocalDateTime.now() + " [ERROR {createXSDEntry}] - " + error.getMessage());
-            String message = "Error in reading the OpenApiSpecification, check if the OpenApiSpecification does not contain errors or invalid entries..." + " [ERROR {createXSDEntry}] - " + error.getMessage();
+            String message = "Error in reading the OpenApiSpecification, check if the OpenApiSpecification does not contain errors or invalid entries... SIMPLETYPE/REFERENCE INITIAL" + " [ERROR {createXSDEntry}] - " + error.getMessage();
             throw new ErrorApiResponse(500, message);
         }
 
