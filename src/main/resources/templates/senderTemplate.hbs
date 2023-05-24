@@ -3,10 +3,9 @@
         xsi:noNamespaceSchemaLocation="../FrankConfig.xsd"
 >
     <Adapter name="{{name}}" description="{{description}}">
-        <Sender name="{{sender.name}}">
-            <HttpSender name="{{httpSender.name}}" methodType="{{httpSender.method}}"
-                        url="{{httpSender.url}}"/>
-        </Sender>
+
+        <!-- <Enter your code here> -->
+
         <Pipeline>
             <Exits>
                 {{#each exits}}
@@ -27,8 +26,9 @@
                 {{/each}}
             </Exits>
 
-            <FixedResultPipeline name="Helloworld" result="Hello World!"/>
-
+            <Sender name="{{sender.name}}">
+                <HttpSender name="{{httpSender.name}}" methodType="{{httpSender.method}}"
+                            url="{{httpSender.url}}"/>
             {{#if adapterRefs.root}}
                 <Json2XmlInputValidator
                         schema="{{adapterRefs.schema}}"
@@ -43,6 +43,7 @@
                     <Forward name="failure" path="InvalidXml"/>
                 </Json2XmlInputValidator>
             {{/if}}
+            </Sender>
         </Pipeline>
     </Adapter>
 </Configuration>
