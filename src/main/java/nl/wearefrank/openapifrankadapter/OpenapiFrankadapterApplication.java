@@ -96,7 +96,7 @@ public class OpenapiFrankadapterApplication {
 
         // Return the zip file as a resource
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + uuid + ".zip\"");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + templateOption + "-" + uuid + ".zip\"");
 
         return ResponseEntity.ok()
                 .headers(headers)

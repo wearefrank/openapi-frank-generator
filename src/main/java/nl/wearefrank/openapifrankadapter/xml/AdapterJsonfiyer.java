@@ -18,6 +18,7 @@ import nl.wearefrank.openapifrankadapter.Option;
 import nl.wearefrank.openapifrankadapter.xml.receiver.ApiListenerClass;
 import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverClass;
 import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverJSONObject;
+import nl.wearefrank.openapifrankadapter.xml.sender.SenderJSONObject;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -50,7 +51,7 @@ public class AdapterJsonfiyer {
             case RECEIVER:
                 adapterJson = ReceiverJSONObject.getReceiverJsonObj(adapterJson, this.path);
             case SENDER:
-                //adapterJson = ReceiverJSONObject.getReceiverJsonObj(adapterJson, this.path);
+                adapterJson = SenderJSONObject.getSenderJsonObj(adapterJson, this.path);
         }
 
         // Add the adapterRefs

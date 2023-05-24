@@ -24,6 +24,7 @@ import nl.wearefrank.openapifrankadapter.xml.AdapterJsonfiyer;
 import nl.wearefrank.openapifrankadapter.xml.AdapterRefs;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
 import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverJSONObject;
+import nl.wearefrank.openapifrankadapter.xml.sender.SenderJSONObject;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -70,7 +71,7 @@ public class XMLGenerator {
                     case RECEIVER:
                         inputStream = XMLGenerator.class.getResourceAsStream("/templates/receiverTemplate.hbs");
                     case SENDER:
-                        //inputStream = XMLGenerator.class.getResourceAsStream("/templates/receiverTemplate.hbs");
+                        inputStream = XMLGenerator.class.getResourceAsStream("/templates/senderTemplate.hbs");
                 }
 
                 // Read the input stream into a String
