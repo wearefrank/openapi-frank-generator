@@ -98,7 +98,6 @@
         footer {
             background-color: #2D2D2D;
             color: #fff;
-            position: absolute;
             bottom: 0;
             width: 100%;
             text-align: center;
@@ -108,7 +107,53 @@
         footer a {
             color: #fff;
         }
+        .button-container {
+            margin-top: 16px;
+        }
 
+        .input-bar {
+            width: 19%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f1f1f1;
+        }
+        .collapsible:after {
+            content: '\02795';
+            font-size: 13px;
+            color: white;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .active:after {
+            content: "\2796";
+        }
     </style>
 </head>
 
@@ -121,15 +166,58 @@
     <input type="file" id="openapi-file" name="file" accept="application/json" />
 
     <div class="center">
-        <input type="submit" name="submit" value="Receiver" class="inline" formaction="/receiver" />
-        <input type="submit" name="submit" value="Sender" class="inline" formaction="/sender" />
+        <input type="submit" name="submit" value="Receiver" class="inline" formaction="/receiver-file" />
+        <input type="submit" name="submit" value="Sender" class="inline" formaction="/sender-file" />
     </div>
 </form>
+
+<form method="post" action="/" class="center">
+    <label for="openapi-url">Enter the URL of an OpenAPI document:</label>
+    <input type="url" id="openapi-url" name="url" placeholder="https://example.com/api/openapi.json" required class="input-bar" />
+
+    <div class="center button-container">
+        <input type="submit" name="submit" value="Receiver" class="inline" formaction="/receiver-url" />
+        <input type="submit" name="submit" value="Sender" class="inline" formaction="/sender-url" />
+    </div>
+</form>
+
 <section>
     <p> &#x26A0; Notice &#x26A0; </p>
     <p>Paths without references will not generate XSD's!</p>
     <P>Make sure that the OpenAPI document is valid.</P>
 </section>
+
+<div style="display:flex;flex-direction:column;">
+    <button class="collapsible">How can I use the OpenApi2Frank</button>
+    <div class="content">
+        <p>.</p>
+    </div>
+    <button class="collapsible">My openapi file returns an incomplete Frank</button>
+    <div class="content">
+        <p>.</p>
+    </div>
+    <button class="collapsible">How to call the API in your application</button>
+    <div class="content">
+        <p>.</p>
+    </div>
+</div>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight){
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    }
+</script>
+
 <footer>
     &copy; WeAreFrank 2023
 </footer>

@@ -17,6 +17,12 @@ import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -47,7 +53,7 @@ public class OpenapiFrankadapterApplication {
 
     }
 
-    @PostMapping(value = "/receiver", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
         if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
@@ -55,11 +61,18 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
-            return responseGenerator(file, Option.RECEIVER);
+            GenFiles convertedFile = new GenFiles("inputed-api.json", file.getBytes());
+            return responseGenerator(convertedFile, Option.RECEIVER);
         }
     }
 
-    @PostMapping(value = "/sender", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/receiver-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Resource> postUrlReceiver(@RequestParam("url") String url) throws IOException, SAXException {
+        GenFiles convertedFile = new GenFiles("inputed-api.json", downloadFileFromUrl(url));
+        return responseGenerator(convertedFile, Option.RECEIVER);
+    }
+
+    @PostMapping(value = "/sender-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
         if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
@@ -67,18 +80,25 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
-            return responseGenerator(file, Option.SENDER);
+            GenFiles convertedFile = new GenFiles("inputed-api.json", file.getBytes());
+            return responseGenerator(convertedFile, Option.SENDER);
         }
     }
 
-    public static ResponseEntity responseGenerator(MultipartFile file, Option templateOption) throws IOException, SAXException {
+    @PostMapping(value = "/sender-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Resource> postUrlSender(@RequestParam("url") String url) throws IOException, SAXException {
+        GenFiles convertedFile = new GenFiles("inputed-api.json", downloadFileFromUrl(url));
+        return responseGenerator(convertedFile, Option.RECEIVER);
+    }
+
+    public static ResponseEntity responseGenerator(GenFiles file, Option templateOption) throws IOException, SAXException {
 
         //// INITIALIZATION ////
         // Generate random folder for which to process the API request
         String uuid = UUID.randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "");
 
         // Convert the incoming JSON multipart file to String
-        String json = new String(file.getBytes());
+        String json = new String(file.getContent());
 
         // Read the openapi specification
         SwaggerParseResult result = new OpenAPIParser().readContents(json, null, null);
@@ -92,7 +112,10 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream(error.getMessage().getBytes())));
         }
-        byte[] response = convertToZip(genFiles, file);
+
+        // Generate the zip file; add original file to the zip file
+        genFiles.add(file);
+        byte[] response = convertToZip(genFiles);
 
         // Return the zip file as a resource
         HttpHeaders headers = new HttpHeaders();
@@ -105,14 +128,9 @@ public class OpenapiFrankadapterApplication {
     }
 
     //// Method to convert in-memory files into a singular zip file ////
-    public static byte[] convertToZip(LinkedList<GenFiles> files, MultipartFile init_json) throws IOException {
+    public static byte[] convertToZip(LinkedList<GenFiles> files) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
-
-        ZipEntry initial = new ZipEntry("inputed-api.json");
-        zipOutputStream.putNextEntry(initial);
-        zipOutputStream.write(init_json.getBytes());
-        zipOutputStream.closeEntry();
 
         for (GenFiles file : files) {
             ZipEntry entry = new ZipEntry(file.getName());
@@ -124,5 +142,32 @@ public class OpenapiFrankadapterApplication {
         zipOutputStream.close();
         byteArrayOutputStream.close();
         return byteArrayOutputStream.toByteArray();
+    }
+    //// Method to download a file from a URL ////
+    public static byte[] downloadFileFromUrl(String url) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+
+        HttpResponse response = httpClient.execute(httpGet);
+        HttpEntity entity = response.getEntity();
+
+        if (entity != null) {
+            try (InputStream inputStream = entity.getContent();
+                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                EntityUtils.consume(entity);
+                httpClient.close();
+                return outputStream.toByteArray();
+            }
+        } else {
+            EntityUtils.consume(entity);
+            httpClient.close();
+            throw new IOException("Empty or null response received.");
+        }
     }
 }
