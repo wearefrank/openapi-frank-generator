@@ -88,7 +88,7 @@ public class OpenapiFrankadapterApplication {
     @PostMapping(value = "/sender-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlSender(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputed-api.json", downloadFileFromUrl(url));
-        return responseGenerator(convertedFile, Option.RECEIVER);
+        return responseGenerator(convertedFile, Option.SENDER);
     }
 
     public static ResponseEntity responseGenerator(GenFiles file, Option templateOption) throws IOException, SAXException {
