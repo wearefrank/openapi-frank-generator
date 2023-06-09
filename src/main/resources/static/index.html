@@ -113,6 +113,7 @@
 
         .input-bar {
             width: 19%;
+            min-width: 200px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -190,15 +191,27 @@
 <div style="display:flex;flex-direction:column;">
     <button class="collapsible">How can I use the OpenApi2Frank</button>
     <div class="content">
-        <p>.</p>
+        <p>There are 2 ways to use the OpenApi2Frank converter:</p>
+        <p>1. Upload your OpenAPI file to the converter.</p>
+        <p>2. Enter the URL of your OpenAPI file.</p>
+        <p>After that you can choose to either get the receiver or sender variant of the Frank.</p>
     </div>
     <button class="collapsible">My openapi file returns an incomplete Frank</button>
     <div class="content">
-        <p>.</p>
+        <p>There are several ways your Frank can be incomplete:</p>
+        <p>1. Your OpenAPI file is not valid. Such as empty arrays or missing elements.</p>
+        <p>2. Your OpenAPI file has no references, which will result in no XSD being generated for that part.</p>
+        <p>It's best to check if your OpenAPI file is valid. And after getting the generated files, check if something is missing.</p>
+        <p>If you think that the converter is not working properly, please make an issue at:
+            <a href="https://github.com/WeAreFrank/openapi-frank-generator/issues">Github</a>. Include the OpenAPI file you've used.</p>
     </div>
     <button class="collapsible">How to call the API in your application</button>
     <div class="content">
-        <p>.</p>
+        <p>The following API URL's can be used for usage in your own application. All are POST.</p>
+        <p>1. https://openapi-frank-generator.wearefrank.org/receiver-file   Requires: OpenAPI File. Returns an zip containing receiver Franks.</p>
+        <p>2. https://openapi-frank-generator.wearefrank.org/receiver-url    Requires: OpenAPI URL. Returns an zip containing receiver Franks.</p>
+        <p>3. https://openapi-frank-generator.wearefrank.org/sender-file     Requires: OpenAPI File. Returns an zip containing sender Franks.</p>
+        <p>4. https://openapi-frank-generator.wearefrank.org/sender-url      Requires: OpenAPI URL. Returns an zip containing sender Franks.</p>
     </div>
 </div>
 <script>
