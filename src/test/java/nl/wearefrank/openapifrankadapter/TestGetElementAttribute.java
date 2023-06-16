@@ -9,6 +9,9 @@ import nl.wearefrank.openapifrankadapter.schemas.HelperClass;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -20,11 +23,16 @@ import static org.mockito.Mockito.when;
 )
 class TestGetElementAttribute {
 
-    String source = System.getProperty("user.dir") + "/src/test/java/TestingOASFile/openapi.json";
-    //                 InputStream inputStream = XMLGenerator.class.getResourceAsStream("/receiverTemplate.hbs"); zelfde als dit nodig
-    SwaggerParseResult result = new OpenAPIParser().readLocation(source, null, null);
+    InputStream inputStream = TestGetElementAttribute.class.getResourceAsStream("/TestingOASFile/openapi.json");
+
+    String source = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+    SwaggerParseResult result = new OpenAPIParser().readContents(source, null, null);
 
     OpenAPI openAPI = result.getOpenAPI();
+
+    TestGetElementAttribute() throws IOException {
+    }
 
     @Test
     void test1() {
