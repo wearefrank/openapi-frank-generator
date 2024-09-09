@@ -65,14 +65,7 @@ public class XMLGenerator {
 
                 //// Template ////
                 // Get the template file as an input stream
-                InputStream inputStream = null;
-
-                switch (templateOption){
-                    case RECEIVER:
-                        inputStream = XMLGenerator.class.getResourceAsStream("/templates/receiverTemplate.hbs");
-                    case SENDER:
-                        inputStream = XMLGenerator.class.getResourceAsStream("/templates/senderTemplate.hbs");
-                }
+                InputStream inputStream = XMLGenerator.class.getResourceAsStream(templateOption.getTemplateName());
 
                 // Read the input stream into a String
                 String templateString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
