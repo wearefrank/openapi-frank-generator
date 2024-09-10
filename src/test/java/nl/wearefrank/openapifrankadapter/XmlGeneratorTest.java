@@ -13,8 +13,6 @@ import java.util.LinkedList;
 
 public class XmlGeneratorTest {
 
-    OpenapiFrankadapterApplication testApp;
-
     @Test
     void testXmlGeneratorReceiver() {
         testXmlGenerator(Option.RECEIVER, "<Receiver");
@@ -29,6 +27,7 @@ public class XmlGeneratorTest {
         InputStream inputStream = TestGetElementAttribute.class.getResourceAsStream("/TestingOASFile/openapi.json");
         String source;
         try {
+            assert inputStream != null;
             source = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Failed to read the input stream", e);
