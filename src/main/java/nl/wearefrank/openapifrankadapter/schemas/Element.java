@@ -27,7 +27,7 @@ public class Element {
     private String type;
     @Setter
     @Getter // TODO: GETTER Only used for testing
-    private Integer minOccurs;
+    private Integer minOccurs = 1; // default value for minOccurs in xsd is 1
     @Setter
     @Getter // TODO: GETTER Only used for testing
     private Integer maxOccurs;
@@ -53,10 +53,8 @@ public class Element {
     }
 
     public void setMinOccursCheck(List<String> required) {
-        // Check if the property is required, if so the min occurs is set to 1
-        if (required != null && required.contains(this.name)) {
-            this.minOccurs = 1;
-        } else {
+        // Check if the property is optional, if so the min occurs is changed from default 1, assuming a property is required, to zero 0
+        if (required == null || !required.contains(this.name)) {
             this.minOccurs = 0;
         }
     }
