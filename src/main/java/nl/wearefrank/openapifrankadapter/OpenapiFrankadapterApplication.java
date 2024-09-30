@@ -53,7 +53,6 @@ public class OpenapiFrankadapterApplication {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
@@ -67,14 +66,12 @@ public class OpenapiFrankadapterApplication {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/receiver-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlReceiver(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
         return responseGenerator(convertedFile, Option.RECEIVER);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
@@ -88,7 +85,6 @@ public class OpenapiFrankadapterApplication {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlSender(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
