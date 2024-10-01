@@ -91,6 +91,25 @@ public class OpenapiFrankadapterApplication {
         return responseGenerator(convertedFile, Option.SENDER);
     }
 
+    @PostMapping(value = "/file-xsd", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource>postFileXsd(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+        // Check if it's a JSON file
+        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
+            return ResponseEntity.status(415)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+        } else {
+            GenFiles convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            return responseGenerator(convertedFile, Option.XSD);
+        }
+    }
+
+    @PostMapping(value = "/url-xsd", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Resource> postUrlXsd(@RequestParam("url") String url) throws IOException, SAXException {
+        GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
+        return responseGenerator(convertedFile, Option.XSD);
+    }
+
     public static ResponseEntity responseGenerator(GenFiles file, Option templateOption) throws IOException, SAXException {
 
         //// INITIALIZATION ////
