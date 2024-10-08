@@ -4,7 +4,6 @@ This project will allow you to convert an OpenAPI file or url to a WeAreFrank! A
 # Contents
 
 - [Installation](#installation)
-- [Instances](#instances)
 - [Sequence Diagram](#sequence-diagram)
 
 # Installation
