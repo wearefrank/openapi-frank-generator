@@ -56,7 +56,7 @@ public class OpenapiFrankadapterApplication {
     @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
+        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
@@ -75,7 +75,7 @@ public class OpenapiFrankadapterApplication {
     @PostMapping(value = "/sender-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
+        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
@@ -94,7 +94,7 @@ public class OpenapiFrankadapterApplication {
     @PostMapping(value = "/xsd-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource>postFileXsd(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().equals("application/json") && !file.getContentType().equals("application/yaml")) {
+        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
