@@ -61,7 +61,12 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
-            GenFiles convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            GenFiles convertedFile;
+            if (!file.getContentType().equals("application/json"))
+                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
+            else {
+                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            }
             return responseGenerator(convertedFile, Option.RECEIVER);
         }
     }
@@ -80,7 +85,12 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
-            GenFiles convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            GenFiles convertedFile;
+            if (!file.getContentType().equals("application/json"))
+                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
+            else {
+                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            }
             return responseGenerator(convertedFile, Option.SENDER);
         }
     }
@@ -99,7 +109,12 @@ public class OpenapiFrankadapterApplication {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
-            GenFiles convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            GenFiles convertedFile;
+            if (!file.getContentType().equals("application/json"))
+                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
+            else {
+                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+            }
             return responseGenerator(convertedFile, Option.XSD);
         }
     }
