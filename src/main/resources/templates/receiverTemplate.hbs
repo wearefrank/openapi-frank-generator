@@ -18,7 +18,7 @@
             <Exits>
                 {{#each exits}}
                     {{#with this as |Response|}}
-                    {{!-- Success Status Codes --}}
+                        {{!-- Success Status Codes --}}
                         {{> statusExit code="200" path="Success" state="SUCCESS"}}
                         {{> statusExit code="201" path="Created" state="SUCCESS"}}
                         {{> statusExit code="202" path="Accepted" state="SUCCESS"}}
@@ -47,11 +47,11 @@
                     deepSearch="false">
                 {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
 
-                <Forward name="success" path="Build_query"/>
-                <Forward name="parserError" path="NotWellFormed"/>
-                <Forward name="illegalRoot" path="IllegalRoot"/>
-                <Forward name="failure" path="InvalidXml"/>
-            </Json2XmlInputValidator>
+                    {{#if forwards.success}}<Forward name="success" path="Build_query"/>{{/if}}
+                    {{#if forwards.parserError}}<Forward name="parserError" path="NotWellFormed"/>{{/if}}
+                    {{#if forwards.illegalRoot}}<Forward name="illegalRoot" path="IllegalRoot"/>{{/if}}
+                    {{#if forwards.failure}}<Forward name="failure" path="InvalidXml"/>{{/if}}
+                </Json2XmlInputValidator>
             {{/if}}
         </Pipeline>
     </Adapter>

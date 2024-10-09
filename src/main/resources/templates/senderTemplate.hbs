@@ -9,6 +9,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../FrankConfig.xsd"
 >
+
+    <!-- <Enter your code here> -->
+
     <Adapter name="{{name}}" description="{{description}}">
         <Pipeline>
             <Exits>
@@ -44,17 +47,14 @@
                         deepSearch="false">
                     {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
 
-                    <Forward name="success" path="Build_query"/>
-                    <Forward name="parserError" path="NotWellFormed"/>
-                    <Forward name="illegalRoot" path="IllegalRoot"/>
-                    <Forward name="failure" path="InvalidXml"/>
+                    {{#if forwards.success}}<Forward name="success" path="Build_query"/>{{/if}}
+                    {{#if forwards.parserError}}<Forward name="parserError" path="NotWellFormed"/>{{/if}}
+                    {{#if forwards.illegalRoot}}<Forward name="illegalRoot" path="IllegalRoot"/>{{/if}}
+                    {{#if forwards.failure}}<Forward name="failure" path="InvalidXml"/>{{/if}}
                 </Json2XmlInputValidator>
             {{/if}}
             </Sender>
         </Pipeline>
-
-        <!-- <Enter your code here> -->
-
     </Adapter>
 </Configuration>
 
