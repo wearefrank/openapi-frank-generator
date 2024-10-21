@@ -61,7 +61,7 @@ public class OpenapiFrankadapterApplication {
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
         } else {
             GenFiles convertedFile;
-            if (!file.getContentType().equals("application/json"))
+            if (!file.getContentType().equals(MediaType.APPLICATION_JSON_VALUE))
                 convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
             else {
                 convertedFile = new GenFiles("inputted-api.json", file.getBytes());
