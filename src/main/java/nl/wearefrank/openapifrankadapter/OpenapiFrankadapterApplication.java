@@ -53,10 +53,9 @@ public class OpenapiFrankadapterApplication {
 
     }
 
-    @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+    private static ResponseEntity getResponseEntity(MultipartFile file, Option templateOption) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
+        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream)")) {
             return ResponseEntity.status(415)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
@@ -67,58 +66,45 @@ public class OpenapiFrankadapterApplication {
             else {
                 convertedFile = new GenFiles("inputted-api.json", file.getBytes());
             }
-            return responseGenerator(convertedFile, Option.RECEIVER);
+            return responseGenerator(convertedFile, templateOption);
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
+        return getResponseEntity(file, Option.RECEIVER);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/receiver-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlReceiver(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
         return responseGenerator(convertedFile, Option.RECEIVER);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
-            return ResponseEntity.status(415)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
-        } else {
-            GenFiles convertedFile;
-            if (!file.getContentType().equals("application/json"))
-                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
-            else {
-                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
-            }
-            return responseGenerator(convertedFile, Option.SENDER);
-        }
+        return getResponseEntity(file, Option.SENDER);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlSender(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
         return responseGenerator(convertedFile, Option.SENDER);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/xsd-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource>postFileXsd(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         // Check if it's a JSON file
-        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream|text/yaml|plain)")) {
-            return ResponseEntity.status(415)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
-        } else {
-            GenFiles convertedFile;
-            if (!file.getContentType().equals("application/json"))
-                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
-            else {
-                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
-            }
-            return responseGenerator(convertedFile, Option.XSD);
-        }
+        return getResponseEntity(file, Option.XSD);
     }
-
+    
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/xsd-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlXsd(@RequestParam("url") String url) throws IOException, SAXException {
         GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
