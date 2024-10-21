@@ -17,16 +17,6 @@ import java.util.stream.Stream;
 
 public class XmlGeneratorTest {
 
-//    @Test
-//    void testXmlGeneratorReceiver() {
-//        testXmlGenerator(Option.RECEIVER, "<Receiver");
-//    }
-//
-//    @Test
-//    void testXmlGeneratorSender() {
-//        testXmlGenerator(Option.SENDER, "<Sender");
-//    }
-
     @ParameterizedTest
     @MethodSource("provideOptions")
     void testXmlGenerator(Option templateOption, String expectedContent) {
