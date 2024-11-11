@@ -24,7 +24,8 @@ public class AdapterClass {
 
     public AdapterClass(OpenAPI openAPI, Map.Entry<String, PathItem> path, Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> operation) {
         // adapterName: remove the first slash and replace the remaining slashes with -
-        this.adapterName = path.getKey().substring(1).replace("/", "-") + "-" + operation.getKey();
+        String tempAdapterName = path.getKey().substring(1).replace("/", "-") + "-" + operation.getKey();
+        this.adapterName = tempAdapterName.replace("{", "").replace("}", "");
         this.adapterDescription = openAPI.getInfo().getDescription();
     }
 
