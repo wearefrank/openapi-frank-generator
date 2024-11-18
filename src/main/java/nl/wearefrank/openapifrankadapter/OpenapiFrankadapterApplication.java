@@ -119,7 +119,6 @@ public class OpenapiFrankadapterApplication {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/xsd-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource>postFileXsd(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
-        // Check if it's a JSON file
         return getFileResponseEntity(file, Option.XSD);
     }
     
@@ -171,7 +170,12 @@ public class OpenapiFrankadapterApplication {
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
         for (GenFiles file : files) {
-            ZipEntry entry = new ZipEntry(file.getName());
+            String fileName = file.getName();
+            String adapterName = fileName.substring(0, fileName.lastIndexOf('.'));
+            String subDir = fileName.endsWith(".xml") ? "xml" : "xsd";
+            String entryName = adapterName + "/" + subDir + "/" + fileName;
+
+            ZipEntry entry = new ZipEntry(entryName);
             zipOutputStream.putNextEntry(entry);
             zipOutputStream.write(file.getContent());
             zipOutputStream.closeEntry();
