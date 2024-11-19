@@ -22,7 +22,8 @@ public class ReceiverClass {
 
     public ReceiverClass(Map.Entry<String, PathItem> path) {
         // receiverName: remove the first slash and remove curly brackets
-        this.receiverName = path.getKey().substring(1).replace("{", "").replace("}", "");
+        String tempReceiverName = path.getKey().substring(1).replace("/", "-");
+        this.receiverName = tempReceiverName.replace("{", "").replace("}", "");
     }
 
     public String getReceiverName() {

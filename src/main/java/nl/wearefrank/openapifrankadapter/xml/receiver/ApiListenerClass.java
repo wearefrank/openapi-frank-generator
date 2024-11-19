@@ -29,8 +29,12 @@ public class ApiListenerClass {
     private final String uriPattern;
 
     public ApiListenerClass(Map.Entry<String, PathItem> path) {
-        this.apiListenerName = path.getKey().substring(1).replace("{", "").replace("}", "");
-        this.uriPattern = path.getKey().replace("{", "").replace("}", "");
+        String tempApiListenerName = path.getKey().substring(1).replace("/", "-");
+        this.apiListenerName = tempApiListenerName.replace("{", "").replace("}", "");
+
+        String tempUriPattern = path.getKey().substring(1).replace("/", "-");
+        this.uriPattern = tempUriPattern.replace("{", "").replace("}", "");
+
         for (Map.Entry<String, Operation> operation : getOperations(path.getValue()).entrySet()) {
             this.method = operation.getKey();
             this.operation = operation.getValue();

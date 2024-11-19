@@ -27,8 +27,12 @@ public class HttpSenderClass {
     private final String uriPattern;
 
     public HttpSenderClass(Map.Entry<String, PathItem> path) {
-        this.httpSenderName = path.getKey().substring(1).replace("{", "").replace("}", "");
-        this.uriPattern = path.getKey().replace("{", "").replace("}", "");
+        String tempHttpSenderName =  path.getKey().substring(1).replace("/", "-");
+        this.httpSenderName = tempHttpSenderName.replace("{", "").replace("}", "");
+
+        String tempUriPattern = path.getKey().substring(1).replace("/", "-");
+        this.uriPattern = tempUriPattern.replace("{", "").replace("}", "");
+
         for (Map.Entry<String, Operation> operation : getOperations(path.getValue()).entrySet()) {
             this.method = operation.getKey();
         }
