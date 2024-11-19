@@ -102,11 +102,7 @@
                             {{#if adapterRefs.responseRoot}}responseRoot="{{adapterRefs.responseRoot}}"{{/if}}
                             deepSearch="false">
                         {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
-
-                        {{#if forwards.success}}<Forward name="success" path="Build_query"/>{{/if}}
-                        {{#if forwards.parserError}}<Forward name="parserError" path="NotWellFormed"/>{{/if}}
-                        {{#if forwards.illegalRoot}}<Forward name="illegalRoot" path="IllegalRoot"/>{{/if}}
-                        {{#if forwards.failure}}<Forward name="failure" path="InvalidXml"/>{{/if}}
+                        {{#if forwards.failure}}<Forward name="failure" path="BadRequest"/>{{/if}}
                     </Json2XmlInputValidator>
                 {{/if}}
             </Sender>
