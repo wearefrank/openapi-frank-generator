@@ -15,6 +15,17 @@
             </ApiListener>
         </Receiver>
         <Pipeline>
+            {{#if adapterRefs.root}}
+                <Json2XmlInputValidator
+                        schema="{{adapterRefs.schema}}"
+                        root="{{adapterRefs.root}}"
+                        {{#if adapterRefs.responseRoot}}responseRoot="{{adapterRefs.responseRoot}}"{{/if}}
+                        deepSearch="false">
+                    {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
+                    {{#if forwards.failure}}<Forward name="failure" path="BadRequest"/>{{/if}}
+                </Json2XmlInputValidator>
+            {{/if}}
+
             <Exits>
                 {{#each exits}}
                     {{#with this as |Response|}}
@@ -92,17 +103,6 @@
             </Exits>
 
             <!-- <Enter your code here> -->
-
-            {{#if adapterRefs.root}}
-                <Json2XmlInputValidator
-                        schema="{{adapterRefs.schema}}"
-                        root="{{adapterRefs.root}}"
-                        {{#if adapterRefs.responseRoot}}responseRoot="{{adapterRefs.responseRoot}}"{{/if}}
-                        deepSearch="false">
-                        {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
-                        {{#if forwards.failure}}<Forward name="failure" path="BadRequest"/>{{/if}}
-                </Json2XmlInputValidator>
-            {{/if}}
         </Pipeline>
     </Adapter>
 </Configuration>
