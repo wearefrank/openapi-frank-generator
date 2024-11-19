@@ -171,14 +171,23 @@ public class OpenapiFrankadapterApplication {
 
         for (GenFiles file : files) {
             String fileName = file.getName();
-            String adapterName = fileName.substring(0, fileName.lastIndexOf('.'));
-            String subDir = fileName.endsWith(".xml") ? "xml" : "xsd";
-            String entryName = adapterName + "/" + subDir + "/" + fileName;
+            if (fileName.startsWith("inputted-api")) {
+                // Add inputted-api file directly to the root of the zip
+                ZipEntry entry = new ZipEntry(fileName);
+                zipOutputStream.putNextEntry(entry);
+                zipOutputStream.write(file.getContent());
+                zipOutputStream.closeEntry();
+            } else {
+                // Create subdirectories for each adapter
+                String adapterName = fileName.substring(0, fileName.lastIndexOf('.'));
+                String subDir = fileName.endsWith(".xml") ? "xml" : "xsd";
+                String entryName = adapterName + "/" + subDir + "/" + fileName;
 
-            ZipEntry entry = new ZipEntry(entryName);
-            zipOutputStream.putNextEntry(entry);
-            zipOutputStream.write(file.getContent());
-            zipOutputStream.closeEntry();
+                ZipEntry entry = new ZipEntry(entryName);
+                zipOutputStream.putNextEntry(entry);
+                zipOutputStream.write(file.getContent());
+                zipOutputStream.closeEntry();
+            }
         }
 
         zipOutputStream.close();
