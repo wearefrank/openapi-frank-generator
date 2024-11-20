@@ -150,6 +150,10 @@ public class OpenapiFrankadapterApplication {
                     .body(new InputStreamResource(new ByteArrayInputStream(error.getMessage().getBytes())));
         }
 
+        // Generate the Configuration.xml file
+        GenFiles configXmlFile = generateConfigurationXml(genFiles);
+        genFiles.add(configXmlFile);
+
         // Generate the zip file; add original file to the zip file
         genFiles.add(file);
         byte[] response = convertToZip(genFiles);
@@ -164,6 +168,23 @@ public class OpenapiFrankadapterApplication {
                 .body(new InputStreamResource(new ByteArrayInputStream(response)));
     }
 
+    private static GenFiles generateConfigurationXml(LinkedList<GenFiles> genFiles) {
+        StringBuilder xmlContent = new StringBuilder();
+        xmlContent.append("<Configuration>\n");
+
+        for (GenFiles file : genFiles) {
+            String fileName = file.getName();
+            if (fileName.endsWith(".xml")) {
+                String dirName = fileName.substring(0, fileName.lastIndexOf('.'));
+                xmlContent.append(" <Include ref=\"").append(dirName).append("/" + "xml" + "/").append(fileName).append("\"/>\n");
+            }
+        }
+
+        xmlContent.append("</Configuration>");
+
+        return new GenFiles("Configuration.xml", xmlContent.toString().getBytes());
+    }
+
     //// Method to convert in-memory files into a singular zip file ////
     public static byte[] convertToZip(LinkedList<GenFiles> files) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -171,7 +192,7 @@ public class OpenapiFrankadapterApplication {
 
         for (GenFiles file : files) {
             String fileName = file.getName();
-            if (fileName.startsWith("inputted-api")) {
+            if (fileName.startsWith("inputted-api") || fileName.startsWith("Configuration")) {
                 // Add inputted-api file directly to the root of the zip
                 ZipEntry entry = new ZipEntry(fileName);
                 zipOutputStream.putNextEntry(entry);

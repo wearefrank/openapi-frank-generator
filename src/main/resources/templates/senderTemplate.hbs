@@ -17,7 +17,7 @@
             <Exits>
                 {{#each exits}}
                     {{#with this as |Response|}}
-                    {{!-- Informational Status Codes --}}
+                        {{!-- Informational Status Codes --}}
                         {{> statusExit code="100" name="Continue" state="INFO"}}
                         {{> statusExit code="101" name="SwitchingProtocols" state="INFO"}}
                         {{> statusExit code="102" name="Processing" state="INFO"}}
@@ -97,12 +97,12 @@
                 </HttpSender>
                 {{#if adapterRefs.root}}
                     <Json2XmlInputValidator
-                            schema="{{adapterRefs.schema}}"
+                            schema="{{name}}/xsd/{{adapterRefs.schema}}"
                             root="{{adapterRefs.root}}"
                             {{#if adapterRefs.responseRoot}}responseRoot="{{adapterRefs.responseRoot}}"{{/if}}
                             deepSearch="false">
                         {{#each parameters}}<Param name="{{this}}" sessionKey="{{this}}"/>{{/each}}
-                        {{#if forwards.failure}}<Forward name="failure" path="BadRequest"/>{{/if}}
+                        <Forward name="failure" path=""/>
                     </Json2XmlInputValidator>
                 {{/if}}
             </Sender>
