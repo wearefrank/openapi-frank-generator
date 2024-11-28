@@ -46,16 +46,6 @@
                         {{> statusExit code="208" name="AlreadyReported" state="SUCCESS"}}
                         {{> statusExit code="226" name="IMUsed" state="SUCCESS"}}
 
-                        {{!-- Redirection Status Codes --}}
-                        {{> statusExit code="300" name="MultipleChoices" state="REDIRECT"}}
-                        {{> statusExit code="301" name="MovedPermanently" state="REDIRECT"}}
-                        {{> statusExit code="302" name="Found" state="REDIRECT"}}
-                        {{> statusExit code="303" name="SeeOther" state="REDIRECT"}}
-                        {{> statusExit code="304" name="NotModified" state="REDIRECT"}}
-                        {{> statusExit code="305" name="UseProxy" state="REDIRECT"}}
-                        {{> statusExit code="307" name="TemporaryRedirect" state="REDIRECT"}}
-                        {{> statusExit code="308" name="PermanentRedirect" state="REDIRECT"}}
-
                         {{!-- Client Error Status Codes --}}
                         {{> statusExit code="400" name="BadRequest" state="ERROR"}}
                         {{> statusExit code="401" name="Unauthorized" state="ERROR"}}
