@@ -140,6 +140,16 @@ public class OpenapiFrankadapterApplication {
         // Read the openapi specification
         SwaggerParseResult result = new OpenAPIParser().readContents(json, null, null);
         OpenAPI openAPI = result.getOpenAPI();
+
+        // Validate parsed result
+        if (openAPI == null) {
+            String errorMessage = String.format("Error parsing OpenAPI specification: %s",
+                    result.getMessages() != null ? String.join(", ", result.getMessages()) : "No additional details.");
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream(String.format("{\"message\": \"%s\"}", errorMessage).getBytes())));
+        }
+
         LinkedList<GenFiles> genFiles;
         // Try catch for error handling return
         try {
