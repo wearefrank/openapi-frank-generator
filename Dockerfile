@@ -28,10 +28,6 @@ FROM tomcat:11.0
 # Set locale to UTF-8
 ENV LANG=C.UTF-8
 
-# Create a non-root user and switch to it
-RUN useradd -ms /bin/bash appuser
-USER appuser
-
 # Copy the war file to tomcat's webapps directory
 COPY --from=builder /build/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
