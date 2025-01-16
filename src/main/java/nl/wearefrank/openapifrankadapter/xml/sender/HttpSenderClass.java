@@ -27,8 +27,11 @@ public class HttpSenderClass {
     private final String uriPattern;
 
     public HttpSenderClass(Map.Entry<String, PathItem> path) {
-        String tempHttpSenderName =  path.getKey().substring(1).replace("/", "-");
-        this.httpSenderName = tempHttpSenderName.replace("{", "").replace("}", "");
+        this.httpSenderName =  path.getKey()
+                .substring(1)
+                .replace("/", "-")
+                .replace("{", "")
+                .replace("}", "");
 
         this.uriPattern = path.getKey();
 

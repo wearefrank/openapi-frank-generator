@@ -22,8 +22,11 @@ public class SenderClass {
 
     public SenderClass(Map.Entry<String, PathItem> path) {
         // receiverName: remove the first slash and remove curly brackets
-        String tempSenderName = path.getKey().substring(1).replace("/", "-");
-        this.senderName = tempSenderName.replace("{", "").replace("}", "");
+        this.senderName = path.getKey()
+                .substring(1)
+                .replace("/", "-")
+                .replace("{", "")
+                .replace("}", "");
     }
 
     public String getSenderName() {
