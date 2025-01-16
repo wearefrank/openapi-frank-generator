@@ -53,17 +53,6 @@ public class OpenapiFrankadapterApplication {
 
     }
 
-    public static boolean checkUrl(String url) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-
-        HttpResponse response = httpClient.execute(httpGet);
-        HttpEntity entity = response.getEntity();
-        String contentType = entity.getContentType().getValue();
-        // Check if it's a JSON or YAML url
-        return contentType.matches("application/(json|yaml|x-yaml|octet-stream)");
-    }
-
     private static ResponseEntity getFileResponseEntity(MultipartFile file, Option templateOption) throws IOException, SAXException {
         // Check if it's a JSON or YAML file
         if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream)")) {
@@ -82,14 +71,8 @@ public class OpenapiFrankadapterApplication {
     }
 
     private static ResponseEntity getUrlResponseEntity(String url, Option templateOption) throws IOException, SAXException {
-        if (!checkUrl(url)) {
-            return ResponseEntity.status(415)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
-        } else {
             GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
             return responseGenerator(convertedFile, templateOption);
-        }
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
