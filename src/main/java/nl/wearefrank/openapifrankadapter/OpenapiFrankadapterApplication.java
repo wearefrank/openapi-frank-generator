@@ -53,59 +53,86 @@ public class OpenapiFrankadapterApplication {
 
     }
 
+    public static boolean checkUrlContentType(HttpEntity entity) throws IOException {
+        String contentType = entity.getContentType().getValue();
+        // Check if it's a JSON or YAML url
+        return contentType.matches("application/(json|yaml|x-yaml|octet-stream)");
+    }
+
     private static ResponseEntity getFileResponseEntity(MultipartFile file, Option templateOption) throws IOException, SAXException {
-        // Check if it's a JSON or YAML file
-        if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream)")) {
-            return ResponseEntity.status(415)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
-        } else {
-            GenFiles convertedFile;
-            if (!file.getContentType().equals(MediaType.APPLICATION_JSON_VALUE))
-                convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
-            else {
-                convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+        try{
+            // Check if it's a JSON or YAML file
+            if (!file.getContentType().matches("application/(json|yaml|x-yaml|octet-stream)")) {
+                return ResponseEntity.status(415)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+            } else {
+                GenFiles convertedFile;
+                if (!file.getContentType().equals(MediaType.APPLICATION_JSON_VALUE))
+                    convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
+                else {
+                    convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+                }
+                return responseGenerator(convertedFile, templateOption);
             }
-            return responseGenerator(convertedFile, templateOption);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Invalid File\"}".getBytes())));
         }
     }
 
     private static ResponseEntity getUrlResponseEntity(String url, Option templateOption) throws IOException, SAXException {
-            GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(url));
-            return responseGenerator(convertedFile, templateOption);
+        try{
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(url);
+
+            HttpResponse response = httpClient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+
+            if (!checkUrlContentType(entity)) {
+                EntityUtils.consume(entity);
+                httpClient.close();
+                return ResponseEntity.status(415)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
+            } else {
+                GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(entity));
+                EntityUtils.consume(entity);
+                httpClient.close();
+                return responseGenerator(convertedFile, templateOption);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Invalid URL\"}".getBytes())));
+        }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/receiver-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileReceiver(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         return getFileResponseEntity(file, Option.RECEIVER);
     }
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/receiver-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlReceiver(@RequestParam("url") String url) throws IOException, SAXException {
         return getUrlResponseEntity(url, Option.RECEIVER);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> postFileSender(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         return getFileResponseEntity(file, Option.SENDER);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/sender-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlSender(@RequestParam("url") String url) throws IOException, SAXException {
         return getUrlResponseEntity(url, Option.SENDER);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/xsd-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource>postFileXsd(@RequestParam("file") MultipartFile file) throws IOException, SAXException {
         return getFileResponseEntity(file, Option.XSD);
     }
     
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/xsd-url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Resource> postUrlXsd(@RequestParam("url") String url) throws IOException, SAXException {
         return getUrlResponseEntity(url, Option.XSD);
@@ -209,12 +236,7 @@ public class OpenapiFrankadapterApplication {
         return byteArrayOutputStream.toByteArray();
     }
     //// Method to download a file from a URL ////
-    public static byte[] downloadFileFromUrl(String url) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-
-        HttpResponse response = httpClient.execute(httpGet);
-        HttpEntity entity = response.getEntity();
+    public static byte[] downloadFileFromUrl(HttpEntity entity) throws IOException {
 
         if (entity != null) {
             try (InputStream inputStream = entity.getContent();
@@ -225,13 +247,10 @@ public class OpenapiFrankadapterApplication {
                     outputStream.write(buffer, 0, bytesRead);
                 }
 
-                EntityUtils.consume(entity);
-                httpClient.close();
+
                 return outputStream.toByteArray();
             }
         } else {
-            EntityUtils.consume(entity);
-            httpClient.close();
             throw new IOException("Empty or null response received.");
         }
     }
