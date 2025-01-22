@@ -23,8 +23,6 @@ import nl.wearefrank.openapifrankadapter.xml.AdapterExits;
 import nl.wearefrank.openapifrankadapter.xml.AdapterJsonfiyer;
 import nl.wearefrank.openapifrankadapter.xml.AdapterRefs;
 import nl.wearefrank.openapifrankadapter.error.ErrorApiResponse;
-import nl.wearefrank.openapifrankadapter.xml.receiver.ReceiverJSONObject;
-import nl.wearefrank.openapifrankadapter.xml.sender.SenderJSONObject;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -35,13 +33,14 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class XMLGenerator {
-    static public LinkedList<GenFiles> execute(OpenAPI openAPI, Option templateOption) throws SAXException, ErrorApiResponse, IOException {
+    static public List<GeneratedFile> execute(OpenAPI openAPI, Option templateOption) throws SAXException, ErrorApiResponse, IOException {
         Paths paths = openAPI.getPaths();
 
-        LinkedList<GenFiles> genFiles = new LinkedList<>();
+        List<GeneratedFile> files = new LinkedList<>();
 
         // For loop going through all the paths and instantiating a new AdapterClass
         for (Map.Entry<String, PathItem> path : paths.entrySet()) {
@@ -56,7 +55,7 @@ public class XMLGenerator {
                 AdapterRefs adapterRefs = new AdapterRefs(openAPI, operation);
                 // Check if there is a need to generate an XSD
                 if (adapterRefs.root != null) {
-                    genFiles.add(new GenFiles(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
+                    files.add(new GeneratedFile(adapter.getAdapterName() + ".xsd", adapterRefs.xsd.toString().getBytes()));
                 }
 
                 //// Generate Exits ////
@@ -87,13 +86,13 @@ public class XMLGenerator {
                     String prettyTemplate = prettyPrintByDom4j(adapterTemplate, 8, false);
 
                     // Export the template to xml file
-                    genFiles.add(new GenFiles(adapter.getAdapterName() + ".xml", prettyTemplate.getBytes()));
+                    files.add(new GeneratedFile(adapter.getAdapterName() + ".xml", prettyTemplate.getBytes()));
                 }
             }
         }
 
         // Return all the Files generated
-        return genFiles;
+        return files;
     }
 
     //// Method to pretty-fy XML ////

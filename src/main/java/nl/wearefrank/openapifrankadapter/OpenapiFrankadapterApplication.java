@@ -38,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -67,11 +67,11 @@ public class OpenapiFrankadapterApplication {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
             } else {
-                GenFiles convertedFile;
+                GeneratedFile convertedFile;
                 if (!file.getContentType().equals(MediaType.APPLICATION_JSON_VALUE))
-                    convertedFile = new GenFiles("inputted-api.yaml", file.getBytes());
+                    convertedFile = new GeneratedFile("inputted-api.yaml", file.getBytes());
                 else {
-                    convertedFile = new GenFiles("inputted-api.json", file.getBytes());
+                    convertedFile = new GeneratedFile("inputted-api.json", file.getBytes());
                 }
                 return responseGenerator(convertedFile, templateOption);
             }
@@ -83,8 +83,7 @@ public class OpenapiFrankadapterApplication {
     }
 
     private static ResponseEntity getUrlResponseEntity(String url, Option templateOption) throws IOException, SAXException {
-        try{
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
             HttpResponse response = httpClient.execute(httpGet);
@@ -92,16 +91,14 @@ public class OpenapiFrankadapterApplication {
 
             if (!checkUrlContentType(entity)) {
                 EntityUtils.consume(entity);
-                httpClient.close();
                 return ResponseEntity.status(415)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new InputStreamResource(new ByteArrayInputStream("{\"message\": \"Unsupported Media Type\"}".getBytes())));
-            } else {
-                GenFiles convertedFile = new GenFiles("inputted-api.json", downloadFileFromUrl(entity));
-                EntityUtils.consume(entity);
-                httpClient.close();
-                return responseGenerator(convertedFile, templateOption);
             }
+            GeneratedFile convertedFile = new GeneratedFile("inputted-api.json", downloadFileFromUrl(entity));
+            EntityUtils.consume(entity);
+            return responseGenerator(convertedFile, templateOption);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +135,7 @@ public class OpenapiFrankadapterApplication {
         return getUrlResponseEntity(url, Option.XSD);
     }
 
-    public static ResponseEntity responseGenerator(GenFiles file, Option templateOption) throws IOException, SAXException {
+    public static ResponseEntity responseGenerator(GeneratedFile file, Option templateOption) throws IOException, SAXException {
 
         //// INITIALIZATION ////
         // Generate random folder for which to process the API request
@@ -160,10 +157,10 @@ public class OpenapiFrankadapterApplication {
                     .body(new InputStreamResource(new ByteArrayInputStream(String.format("{\"message\": \"%s\"}", errorMessage).getBytes())));
         }
 
-        LinkedList<GenFiles> genFiles;
+        List<GeneratedFile> files;
         // Try catch for error handling return
         try {
-            genFiles = XMLGenerator.execute(openAPI, templateOption);
+            files = XMLGenerator.execute(openAPI, templateOption);
         } catch (ErrorApiResponse error) {
             return ResponseEntity.status(error.getStatus())
                     .contentType(MediaType.APPLICATION_JSON)
@@ -171,12 +168,12 @@ public class OpenapiFrankadapterApplication {
         }
 
         // Generate the Configuration.xml file
-        GenFiles configXmlFile = generateConfigurationXml(genFiles);
-        genFiles.add(configXmlFile);
+        GeneratedFile configXmlFile = generateConfigurationXml(files);
+        files.add(configXmlFile);
 
         // Generate the zip file; add original file to the zip file
-        genFiles.add(file);
-        byte[] response = convertToZip(genFiles);
+        files.add(file);
+        byte[] response = convertToZip(files);
 
         // Return the zip file as a resource
         HttpHeaders headers = new HttpHeaders();
@@ -188,11 +185,11 @@ public class OpenapiFrankadapterApplication {
                 .body(new InputStreamResource(new ByteArrayInputStream(response)));
     }
 
-    private static GenFiles generateConfigurationXml(LinkedList<GenFiles> genFiles) {
+    private static GeneratedFile generateConfigurationXml(List<GeneratedFile> files) {
         StringBuilder xmlContent = new StringBuilder();
         xmlContent.append("<Configuration>\n");
 
-        for (GenFiles file : genFiles) {
+        for (GeneratedFile file : files) {
             String fileName = file.getName();
             if (fileName.endsWith(".xml")) {
                 String dirName = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -202,15 +199,15 @@ public class OpenapiFrankadapterApplication {
 
         xmlContent.append("</Configuration>");
 
-        return new GenFiles("Configuration.xml", xmlContent.toString().getBytes());
+        return new GeneratedFile("Configuration.xml", xmlContent.toString().getBytes());
     }
 
     //// Method to convert in-memory files into a singular zip file ////
-    public static byte[] convertToZip(LinkedList<GenFiles> files) throws IOException {
+    public static byte[] convertToZip(List<GeneratedFile> files) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
-        for (GenFiles file : files) {
+        for (GeneratedFile file : files) {
             String fileName = file.getName();
             if (fileName.startsWith("inputted-api") || fileName.startsWith("Configuration")) {
                 // Add inputted-api file directly to the root of the zip
