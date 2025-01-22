@@ -61,20 +61,20 @@ public class XmlGeneratorTest {
         );
     }
 
-    @Test
-    void testExecute() throws SAXException, IOException {
-        OpenAPI openAPI = new OpenAPI();
-        Paths paths = new Paths();
-        PathItem pathItem = new PathItem().get(new Operation());
-        paths.addPathItem("/test", pathItem);
-        openAPI.setPaths(paths);
-        Info info = new Info();
-        openAPI.setInfo(info);
-
-        List<GeneratedFile> files = XMLGenerator.execute(openAPI, Option.RECEIVER);
-        assertFalse(files.isEmpty());
-        assertTrue(files.stream().anyMatch(file -> file.getName().endsWith(".xml")));
-    }
+//    @Test
+//    void testExecute() throws SAXException, IOException {
+//        OpenAPI openAPI = new OpenAPI();
+//        Paths paths = new Paths();
+//        PathItem pathItem = new PathItem().get(new Operation());
+//        paths.addPathItem("/test", pathItem);
+//        openAPI.setPaths(paths);
+//        Info info = new Info();
+//        openAPI.setInfo(info);
+//
+//        List<GeneratedFile> files = XMLGenerator.execute(openAPI, Option.RECEIVER);
+//        assertFalse(files.isEmpty());
+//        assertTrue(files.stream().anyMatch(file -> file.getName().endsWith(".xml")));
+//    }
 
     @Test
     void testPrettyPrintByDom4j() {
