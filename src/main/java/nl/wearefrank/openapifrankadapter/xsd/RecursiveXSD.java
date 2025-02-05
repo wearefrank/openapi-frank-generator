@@ -29,14 +29,16 @@ import java.util.Map;
 public class RecursiveXSD {
 
     static public ComplexType createRecursiveXSD(Map<String, Schema> props, ComplexType complexType, List<String> required, OpenAPI openAPI) throws ErrorApiResponse {
-        for (Map.Entry<String, Schema> e : props.entrySet()) {
-            String name = e.getKey();
-            if (isComplexType(e)) {
-                createComplexType(e, name, complexType, openAPI);
-            } else if (HelperClass.checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
-                createSimpleType(e, name, complexType);
-            } else {
-                createElement(e, name, complexType, required);
+        if (props!=null){
+            for (Map.Entry<String, Schema> e : props.entrySet()) {
+                String name = e.getKey();
+                if (isComplexType(e)) {
+                    createComplexType(e, name, complexType, openAPI);
+                } else if (HelperClass.checkIfSimpleType(e, new SimpleType(e.getKey(), e.getValue().getType()))) {
+                    createSimpleType(e, name, complexType);
+                } else {
+                    createElement(e, name, complexType, required);
+                }
             }
         }
         return complexType;

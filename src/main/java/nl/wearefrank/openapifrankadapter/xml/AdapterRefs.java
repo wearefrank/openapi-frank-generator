@@ -102,8 +102,14 @@ public class AdapterRefs {
             }
 
             for (Map.Entry<String, MediaType> entry : response.get(code).getContent().entrySet()) {
+                if (entry.getValue().getSchema() == null) {
+                    continue;
+                }
                 String ref = entry.getValue().getSchema().get$ref();
                 if (ref == null) {
+                    if (entry.getValue().getSchema().getType() == null) {
+                        continue;
+                    }
                     if (entry.getValue().getSchema().getType().equals("array")) {
                         ref = entry.getValue().getSchema().getItems().get$ref();
                     }
